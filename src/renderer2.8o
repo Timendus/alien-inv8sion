@@ -1,0 +1,117 @@
+: render-scene
+  clear
+  render-player
+  render-background
+  return
+
+: render-background
+  :alias X v2
+  :alias Y v3
+  :alias playerX v4
+  :alias playerY v5
+  :alias playerXmasked v6
+  :alias playerYmasked v7
+  :alias mask v8
+  :alias temp1 v9
+  :alias temp2 vA
+  :alias temp3 vB
+
+  X := 0
+  Y := 0
+  i := player
+  load v1
+  playerX := v0
+  playerY := v1
+  playerXmasked := playerX
+  playerYmasked := playerY
+  mask := 0b11111000
+  playerXmasked &= mask
+  playerYmasked &= mask
+
+  loop
+    # Determine if we have overlap with the player sprite
+    temp1 := mask
+    temp1 &= X
+    if temp1 == playerXmasked then jump render-background-x-match
+    temp1 -= 0b00001000
+    if temp1 != playerXmasked then jump render-background-continue
+    : render-background-x-match
+    temp1 := mask
+    temp1 &= Y
+    if temp1 == playerYmasked then jump render-background-mask
+    temp1 -= 0b00001000
+    if temp1 != playerYmasked then jump render-background-continue
+    jump render-background-mask
+
+    # No overlap with player sprite, just render
+    : render-background-continue
+    i := background-sprite
+    sprite X Y 8
+    jump render-background-next
+
+    # Overlap with player sprite, mask out player first
+    : render-background-mask
+    # TODO
+    temp1 := 0
+    loop
+      i := background-sprite
+      i += temp1
+      load v0
+      # if playerY <= Y + temp1, we've hit the top of the player
+      temp2 := Y
+      temp2 += temp1
+      if playerY <= temp2 begin
+        # if playerY + <height> > Y + temp1, we haven't reached the bottom of the player yet
+        temp3 := playerY
+        temp3 += 5 # player sprite height
+        if temp3 > temp2 begin
+          # We've overlapping with the player, so mask out.
+          # Clears for now
+          v0 := 0
+        end
+      end
+      i := sprite-buffer
+      i += temp1
+      save v0
+      temp1 += 1
+    if temp1 != 8 then again
+    i := sprite-buffer
+    sprite X Y 8
+
+    : render-background-next
+    X += 8
+    if X == 128 begin
+      X := 0
+      Y += 8
+      if Y == 64 then return
+    end
+  again
+
+: render-player
+  i := player
+  load v1
+  i := my-sprite
+  sprite v0 v1 5
+  return
+
+#data
+
+: sprite-buffer
+  0 0 0 0 0 0 0 0
+
+: background-sprite
+  0b00001000
+  0b00100001
+  0b00000100
+  0b10000000
+  0b00010010
+  0b01000000
+  0b00000100
+  0b10010000
+
+: my-sprite
+  0b11010110
+  0b00111000
+  0b01111110
+  0b10101000
+  0b00100100

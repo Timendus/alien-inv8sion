@@ -4,6 +4,11 @@
   hires
 
 : main-redraw
+  v0 := 1
+  delay := v0
+  loop
+    v0 := delay
+  if v0 != 0 then again
   render-scene
   mark-screen-clean
 : main-loop
@@ -14,57 +19,6 @@
   if v0 == 1 then jump main-redraw
   jump main-loop
 
-: render-scene
-  display-clear
-  render-background
-  render-player
-  display-copy
-  return
-
-: render-background
-  v2 := 0 # X
-  v3 := 0 # Y
-  loop
-    :unpack long background-sprite
-    v4 := 8  # height
-    display-sprite
-    v2 += 8
-    if v2 == 128 begin
-      v2 := 0
-      v3 += 8
-      if v3 == 64 then return
-    end
-  again
-
-: render-player
-  i := player
-  load v1
-  v2 := v0 # X
-  v3 := v1 # Y
-  :unpack long my-sprite
-  v4 := 5  # height
-  display-sprite
-  return
-
-#data
-
-: background-sprite
-  0b00001000
-  0b00100001
-  0b00000100
-  0b10000000
-  0b00010010
-  0b01000000
-  0b00000100
-  0b10010000
-
-: my-sprite
-  0b11010110
-  0b00111000
-  0b01111110
-  0b10101000
-  0b00100100
-
-#include "display.8o"
+#include "renderer1.8o"
 #include "game-state.8o"
 #include "key-input.8o"
