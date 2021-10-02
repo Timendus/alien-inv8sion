@@ -1,7 +1,7 @@
 {
   "name": "Octojam 8",
   "scripts": {
-    "build": "octopus src/index.8o bin/octojam8.8o && octo bin/octojam8.8o bin/octojam8.ch8 && octo bin/octojam8.8o docs/index.html"
+    "build": "octopus src/index.8o bin/octojam8.8o && octo bin/octojam8.8o bin/octojam8.ch8 && octo --options octo-config.json bin/octojam8.8o docs/index.html && cat bin/octojam8.8o | pbcopy"
   },
   "dependencies": {
     "chipcode": "../chipcode",
