@@ -1,0 +1,191 @@
+# Show the contents of the display buffer on the screen
+: display-copy
+  :alias X v0
+  :alias Y v1
+  :alias N1 v2
+  :alias N2 v3
+  X := 0
+  N1 := 14
+  N2 := 8
+  i := long display-buffer
+  clear
+  loop
+    Y := 0
+    sprite X Y 14
+    i += N1
+    Y += N1
+    sprite X Y 14
+    i += N1
+    Y += N1
+    sprite X Y 14
+    i += N1
+    Y += N1
+    sprite X Y 14
+    i += N1
+    Y += N1
+    sprite X Y 8
+    i += N2
+    X += N2
+  if X != 128 then again
+  return
+
+: display-clear
+  i := display-buffer
+  v0 := 0
+  v1 := 0
+  v2 := 0
+  v3 := 0
+  v4 := 0
+  v5 := 0
+  v6 := 0
+  v7 := 0
+  v8 := 0
+  #if SCHIP
+    v9 := 8
+  #end
+  loop
+    save v7
+    #if SCHIP
+      i += v9
+    #end
+    v8 += 1
+    if v8 == 128 then return
+  again
+
+# Render a sprite to the display buffer
+# v0, v1 = sprite address
+# v2 = X coordinate
+# v3 = Y coordinate
+# v4 = height (in pixels)
+# Preserves X and Y
+# Destroys v0, v1, v4 - v7 and i
+# TODO: Don't render outside of buffer (dangerous!)
+: display-sprite
+  :alias X v2
+  :alias Y v3
+  :alias height v4
+  :alias row v5
+  :alias leftPart v6
+  :alias rightPart v7
+  :alias offset v1
+  :alias temp1 v8
+  :alias temp2 v9
+
+  row := 0
+  i := display-sprite-address
+  save v1
+
+  loop
+    if row == height then return
+
+    # Get the sprite data to put on the display buffer
+    0xF0 0x00 # i := long ....
+  : display-sprite-address
+    0x00 0x00
+    i += row
+    load v0
+
+    offset := 0b00000111
+    offset &= X
+    rightPart := 0
+    leftPart := v0
+
+    # Do some shifting magic for unaligned sprites
+    loop
+      while offset != 0
+      rightPart >>= rightPart
+      leftPart >>= leftPart
+      if vF != 0 then rightPart += 128
+      offset -= 1
+    again
+
+    # Write the new data to the buffer
+    display-buffer-address
+    load v0
+    v0 |= leftPart
+    temp1 := v0
+    #if SCHIP
+      vF := 64
+      i += vF
+    #else
+      vF := 63
+      i += vF
+    #end
+    load v0
+    v0 |= rightPart
+    temp2 := v0
+
+    display-buffer-address
+    v0 := temp1
+    save v0
+    #if SCHIP
+      vF := 64
+      i += vF
+    #else
+      vF := 63
+      i += vF
+    #end
+    v0 := temp2
+    save v0
+
+    row += 1
+  again
+
+# Get a pointer into the right bytes of the buffer
+: display-buffer-address
+  # Calculate place in buffer
+  offset := X
+  offset >>= offset
+  offset >>= offset
+  offset >>= offset
+  i := long display-buffer
+  v0 := 64
+  loop
+    while offset != 0
+    i += v0
+    offset -= 1
+  again
+  i += Y
+  i += row
+  return
+
+#data
+
+: display-buffer
+  # 4 times 8 lines of 32 bytes each = 1024 bytes
+  # The image is layed out in consecutive vertical slices of 8 pixels wide
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0

@@ -1,0 +1,16 @@
+:macro s8plane N {
+	:byte { 0xF0 + N }
+	:byte 0x01
+}
+
+:macro mark-screen-clean {
+  i := dirty
+  v0 := 0
+  save v0
+}
+
+:macro mark-screen-dirty {
+  i := dirty
+  v0 := 1
+  save v0
+}
