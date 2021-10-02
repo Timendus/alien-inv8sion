@@ -19,6 +19,6 @@
   if v0 == 1 then jump main-redraw
   jump main-loop
 
-#include "renderer1.8o"
+#include "renderer2.8o"
 #include "game-state.8o"
 #include "key-input.8o"

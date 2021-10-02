@@ -65,9 +65,34 @@
         temp3 := playerY
         temp3 += 5 # player sprite height
         if temp3 > temp2 begin
-          # We've overlapping with the player, so mask out.
-          # Clears for now
-          v0 := 0
+          # We're overlapping with the player, so mask out
+          temp2 -= playerY
+          i := my-sprite
+          i += temp2
+          temp3 := v0
+          load v0
+          # v0 = player sprite line
+          # temp3 = background sprite line
+          if playerX != X begin
+            if playerX > X begin
+              temp2 := playerX
+              temp2 -= X
+              loop
+               v0 >>= v0
+               temp2 -= 1
+              if temp2 != 0 then again
+            else
+              temp2 := X
+              temp2 -= playerX
+              loop
+               v0 <<= v0
+               temp2 -= 1
+              if temp2 != 0 then again
+            end
+          end
+          vF := 0xFF
+          v0 ^= vF
+          v0 &= temp3
         end
       end
       i := sprite-buffer
