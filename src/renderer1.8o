@@ -8,19 +8,68 @@
   return
 
 : render-background
-  v2 := 0 # X
+  i := long tick
+  load vA - vA
+
+  vA >>= vA
+  v0 := 7
+  v0 &= vA
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 19 # Y
+  #:breakpoint stop
+  loop
+    :unpack long background2-sprite
+    v4 := 5  # height
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vA >>= vA
+  v0 := 7
+  v0 &= vA
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 14 # Y
+  #:breakpoint stop
+  loop
+    :unpack long background3-sprite
+    v4 := 5  # height
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vA >>= vA
+  v0 := 7
+  v0 &= vA
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 9 # Y
+  loop
+    :unpack long background2-sprite
+    v4 := 5  # height
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vA >>= vA
+  v0 := 7
+  v0 &= vA
+  v2 := 7
+  v2 -= v0 # X
   v3 := 0 # Y
   loop
-    :unpack long background-sprite
+    :unpack long background1-sprite
     v4 := 8  # height
     display-sprite
     v2 += 8
-    if v2 == 128 begin
-      v2 := 0
-      v3 += 8
-      if v3 == 64 then return
-    end
+    if v2 < 64 then
   again
+
+  return
 
 : render-player
   i := player
@@ -34,7 +83,7 @@
 
 #data
 
-: background-sprite
+: background1-sprite
   0b00001000
   0b00100001
   0b00000100
@@ -43,6 +92,18 @@
   0b01000000
   0b00000100
   0b10010000
+: background2-sprite
+  0b00010000
+  0b00111000
+  0b11111100
+  0b11111111
+  0b11111111
+: background3-sprite
+  0b11100111
+  0b11000011
+  0b10000001
+  0b00000000
+  0b00000000
 
 : my-sprite
   0b11010110

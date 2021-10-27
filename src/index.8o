@@ -1,24 +1,29 @@
 #include "macros.8o"
 
 : main
-  hires
+  monitors
+  lores
 
 : main-redraw
   v0 := 1
   delay := v0
   loop
     v0 := delay
-  if v0 != 0 then again
-  render-scene
-  mark-screen-clean
-: main-loop
-  #clock-tick
-  check-keys
-  i := long dirty    # Is the screen dirty?
-  load v0
-  if v0 == 1 then jump main-redraw
-  jump main-loop
+    if v0 != 0 then
+  again
 
-#include "renderer2.8o"
+  clock-tick
+  check-keys
+  render-scene
+  jump main-redraw
+
+: clock-tick
+  i := long tick
+  load v0 - v0 # Don't auto-increment i
+  v0 += 1
+  save v0
+  return
+
+#include "renderer1.8o"
 #include "game-state.8o"
 #include "key-input.8o"

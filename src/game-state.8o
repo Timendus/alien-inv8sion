@@ -6,3 +6,10 @@
 
 : dirty
   0
+
+: tick
+  0
+
+: monitors
+  :monitor player 5
+  return
