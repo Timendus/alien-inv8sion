@@ -3,221 +3,190 @@
 	:byte 0x01
 }
 
-:macro mark-screen-clean {
-  i := dirty
-  v0 := 0
-  save v0
-}
-
-:macro mark-screen-dirty {
-  i := dirty
-  v0 := 1
-  save v0
-}
-
 
 : main
-  hires
+  lores
 
 : main-redraw
-  render-scene
-  mark-screen-clean
-: main-loop
-  #clock-tick
-  check-keys
-  i := long dirty    # Is the screen dirty?
-  load v0
-  if v0 == 1 then jump main-redraw
-  jump main-loop
-
-: render-scene
-  display-clear
-  render-background
-  render-player
-  display-copy
-  return
-
-: render-background
-  v2 := 0 # X
-  v3 := 0 # Y
+  v0 := 1
+  delay := v0
   loop
-    :unpack long background-sprite
-    v4 := 8  # height
-    display-sprite
-    v2 += 8
-    if v2 == 128 begin
-      v2 := 0
-      v3 += 8
-      if v3 == 64 then return
-    end
+    v0 := delay
+    if v0 != 0 then
   again
 
-: render-player
-  i := player
-  load v1
-  v2 := v0 # X
-  v3 := v1 # Y
-  :unpack long my-sprite
-  v4 := 5  # height
-  display-sprite
-  return
+  clock-tick
+  check-keys
+  render-scene
+  jump main-redraw
 
-
-
-: player
-  0 0 # X, Y
-: player-orientation
-  0 # orientation
-
-: dirty
-  0
-
-#####################
-# Non-blocking key input check
-# Updates the player data on input, checks for collisions
-# Destroys v0 - v3
-: check-keys
-  v0 := OCTO_KEY_A
-  if v0 key then jump move-left
-  v0 := OCTO_KEY_D
-  if v0 key then jump move-right
-  v0 := OCTO_KEY_W
-  if v0 key then jump move-up
-  v0 := OCTO_KEY_S
-  if v0 key then jump move-down
-  return
-
-: move-right
-  i := long player
-  load v1
+: clock-tick
+  i := long tick
+  load v0 - v0 # Don't auto-increment i
   v0 += 1
-  jump collide-or-save
-: move-left
-  i := long player
-  load v1
-  v0 -= 1
-  jump collide-or-save
-: move-up
-  i := long player
-  load v1
-  v1 -= 1
-  jump collide-or-save
-: move-down
-  i := long player
-  load v1
-  v1 += 1
-  # Fall through
-
-: collide-or-save
-  # TODO: Check for colission
-  i := long player
-  save v1
-  mark-screen-dirty
+  save v0
   return
-
-# Blocking "press any key" routine
-# (does play music though)
-# Returns pressed key in v5
-: wait-key-press
-  vA := 0
-: wait-key-press-loop
-  #clock-tick
-  if vA key then return
-  vA += 1
-  if vA != 16 then jump wait-key-press-loop
-  jump wait-key-press
-
-
-: background-sprite
-  0b00001000
-  0b00100001
-  0b00000100
-  0b10000000
-  0b00010010
-  0b01000000
-  0b00000100
-  0b10010000
-
-: my-sprite
-  0b11010110
-  0b00111000
-  0b01111110
-  0b10101000
-  0b00100100
 
 # Show the contents of the display buffer on the screen
+: display-copy-values
+  0 1 8 16 24 32 40 48 56 15
 : display-copy
-  :alias X v0
-  :alias Y v1
-  :alias N1 v2
-  :alias N2 v3
-  X := 0
-  N1 := 14
-  N2 := 8
-  i := long display-buffer
+  i := display-copy-values
+  load v9
+  i := display-buffer
+
+  s8plane 0xF
   clear
-  loop
-    Y := 0
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 8
-    i += N2
-    X += N2
-  if X != 128 then again
+
+  s8plane 1
+  sprite v0 v1 15   i += v9
+  sprite v0 v3 15   i += v9
+  sprite v2 v1 15   i += v9
+  sprite v2 v3 15   i += v9
+  sprite v3 v1 15   i += v9
+  sprite v3 v3 15   i += v9
+  sprite v4 v1 15   i += v9
+  sprite v4 v3 15   i += v9
+  sprite v5 v1 15   i += v9
+  sprite v5 v3 15   i += v9
+  sprite v6 v1 15   i += v9
+  sprite v6 v3 15   i += v9
+  sprite v7 v1 15   i += v9
+  sprite v7 v3 15   i += v9
+  sprite v8 v1 15   i += v9
+  sprite v8 v3 15   i += v9
+
+  s8plane 2
+  sprite v0 v1 15   i += v9
+  sprite v0 v3 15   i += v9
+  sprite v2 v1 15   i += v9
+  sprite v2 v3 15   i += v9
+  sprite v3 v1 15   i += v9
+  sprite v3 v3 15   i += v9
+  sprite v4 v1 15   i += v9
+  sprite v4 v3 15   i += v9
+  sprite v5 v1 15   i += v9
+  sprite v5 v3 15   i += v9
+  sprite v6 v1 15   i += v9
+  sprite v6 v3 15   i += v9
+  sprite v7 v1 15   i += v9
+  sprite v7 v3 15   i += v9
+  sprite v8 v1 15   i += v9
+  sprite v8 v3 15   i += v9
+
+  s8plane 4
+  sprite v0 v1 15   i += v9
+  sprite v0 v3 15   i += v9
+  sprite v2 v1 15   i += v9
+  sprite v2 v3 15   i += v9
+  sprite v3 v1 15   i += v9
+  sprite v3 v3 15   i += v9
+  sprite v4 v1 15   i += v9
+  sprite v4 v3 15   i += v9
+  sprite v5 v1 15   i += v9
+  sprite v5 v3 15   i += v9
+  sprite v6 v1 15   i += v9
+  sprite v6 v3 15   i += v9
+  sprite v7 v1 15   i += v9
+  sprite v7 v3 15   i += v9
+  sprite v8 v1 15   i += v9
+  sprite v8 v3 15   i += v9
+
+  s8plane 8
+  sprite v0 v1 15   i += v9
+  sprite v0 v3 15   i += v9
+  sprite v2 v1 15   i += v9
+  sprite v2 v3 15   i += v9
+  sprite v3 v1 15   i += v9
+  sprite v3 v3 15   i += v9
+  sprite v4 v1 15   i += v9
+  sprite v4 v3 15   i += v9
+  sprite v5 v1 15   i += v9
+  sprite v5 v3 15   i += v9
+  sprite v6 v1 15   i += v9
+  sprite v6 v3 15   i += v9
+  sprite v7 v1 15   i += v9
+  sprite v7 v3 15   i += v9
+  sprite v8 v1 15   i += v9
+  sprite v8 v3 15   i += v9
+
   return
 
+# Display buffer contains 8 * 15 * 2 bytes = 240 bytes per layer
+# 240 / 15 = 16. So either load 16 values 15 times or the other way around
+: display-clear-values
+  0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0
 : display-clear
+  i := display-clear-values
+  load vF
   i := display-buffer
-  v0 := 0
-  v1 := 0
-  v2 := 0
-  v3 := 0
-  v4 := 0
-  v5 := 0
-  v6 := 0
-  v7 := 0
-  v8 := 0
-  loop
-    save v7
-    v8 += 1
-    if v8 == 128 then return
-  again
+
+  # Plane 1
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF
+
+  # Plane 2
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF
+
+  # Plane 3
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF
+
+  # Plane 4
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF  save vF
+  save vF  save vF  save vF
+  return
 
 # Render a sprite to the display buffer
 # v0, v1 = sprite address
 # v2 = X coordinate
 # v3 = Y coordinate
 # v4 = height (in pixels)
-# Preserves X and Y
-# Destroys v0, v1, v4 - v7 and i
-# TODO: Don't render outside of buffer (dangerous!)
+# v5 = target plane (0-3)
+# Preserves v2 - v5
+# Destroys v0, v1, v6 - v9 and i
+
+# Overhead: 5 instructions
+# Per row: ~38 instructions
+# Per shift: 7 instructions
+# So for 8x8 sprite at bad alignment: 5 + 8 * (38 + 7*7) = 701 instructions
+# For 8x8 sprite at good alignment: 5 + 8 * (38 + 2) = 325 instructions
 : display-sprite
   :alias X v2
   :alias Y v3
   :alias height v4
-  :alias row v5
-  :alias leftPart v6
-  :alias rightPart v7
+  :alias targetplane v5
+  :alias row v6
+  :alias leftPart v7
+  :alias rightPart v8
   :alias offset v1
-  :alias temp1 v8
-  :alias temp2 v9
+  :alias temp1 v9
 
   row := 0
   i := display-sprite-address
   save v1
 
+  # Normalize coordinates
+  v0 := 31
+  v3 &= v0
+  v0 := 63
+  v2 &= v0
+
   loop
-    if row == height then return
+    if row == height then return # Done
+    v0 := Y
+    v0 += row
+    if v0 == 30 then return # Overflowing bottom of screen, so done
 
     # Get the sprite data to put on the display buffer
     0xF0 0x00 # i := long ....
@@ -240,82 +209,344 @@
       offset -= 1
     again
 
-    # Write the new data to the buffer
-    display-buffer-address
-    load v0
-    v0 |= leftPart
-    temp1 := v0
-      vF := 63
-      i += vF
-    load v0
-    v0 |= rightPart
-    temp2 := v0
+    # Calculate place in buffer
+    offset := X
+    offset >>= offset
+    offset >>= offset
+    offset >>= offset
+    i := long display-buffer
+    # Get right plane
+    v0 := 240
+    temp1 := targetplane
+    loop
+      while temp1 > 0
+      i += v0
+      temp1 -= 1
+    again
+    # Get right column
+    v0 := 30 # rows
+    loop
+      while offset != 0
+      i += v0
+      offset -= 1
+    again
+    # Get right row
+    i += Y
+    i += row
 
-    display-buffer-address
-    v0 := temp1
-    save v0
-      vF := 63
+    # Write the new data to the buffer
+    load v0 - v0 # Don't auto-increment i
+    v0 |= leftPart
+    save v0 - v0
+    if X < 56 begin
+      vF := 30
       i += vF
-    v0 := temp2
-    save v0
+      load v0 - v0
+      v0 |= rightPart
+      save v0 - v0
+    end
 
     row += 1
   again
 
-# Get a pointer into the right bytes of the buffer
-: display-buffer-address
-  # Calculate place in buffer
-  offset := X
-  offset >>= offset
-  offset >>= offset
-  offset >>= offset
-  i := long display-buffer
-  v0 := 64
+
+
+: render-scene
+  display-clear
+  render-background
+  render-player
+  render-hud
+  display-copy
+  return
+
+: render-background
+  i := long tick
+  load vE - vE
+
+  vE >>= vE
+  v0 := 7
+  v0 &= vE
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 19 # Y
+  #:breakpoint stop
   loop
-    while offset != 0
-    i += v0
-    offset -= 1
+    :unpack long background2-sprite
+    v4 := 5 # height
+    v5 := 1 # plane
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
   again
-  i += Y
-  i += row
+
+  vE >>= vE
+  v0 := 7
+  v0 &= vE
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 14 # Y
+  #:breakpoint stop
+  loop
+    :unpack long background3-sprite
+    v4 := 5 # height
+    v5 := 1 # plane
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vE >>= vE
+  v0 := 7
+  v0 &= vE
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 9 # Y
+  loop
+    :unpack long background2-sprite
+    v4 := 5 # height
+    v5 := 1 # plane
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vE >>= vE
+  v0 := 7
+  v0 &= vE
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 0 # Y
+  loop
+    :unpack long background1-sprite
+    v4 := 8 # height
+    v5 := 1 # plane
+    display-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  return
+
+: render-player
+  i := player
+  load v1
+  v2 := v0 # X
+  v3 := v1 # Y
+  v4 := 7 # height
+  v5 := 0 # plane
+  :unpack long my-sprite
+  display-sprite
+  v5 := 1 # plane
+  :unpack long my-sprite
+  display-sprite
+  return
+
+: render-hud
+  # Plane 1
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane1
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane1-plus-15
+  save vE
+
+  # Plane 2
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane2
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane2-plus-15
+  save vE
+
   return
 
 
+
+: player
+  10 10 # X, Y
+: player-orientation
+  0 # orientation
+
+: tick
+  0
+
+:monitor player 2
+:monitor player-orientation 1
+:monitor tick 1
+
+#####################
+# Non-blocking key input check
+# Updates the player data on input, checks for collisions
+# Destroys v0 - v3
+: check-keys
+  v0 := OCTO_KEY_A
+  if v0 key then jump move-left
+  v0 := OCTO_KEY_D
+  if v0 key then jump move-right
+  v0 := OCTO_KEY_W
+  if v0 key then jump move-up
+  v0 := OCTO_KEY_S
+  if v0 key then jump move-down
+  return
+
+: move-right
+  i := long player
+  load v1
+  if v0 < 55 then v0 += 1
+  jump collide-or-save
+: move-left
+  i := long player
+  load v1
+  if v0 > 9 then v0 -= 1
+  jump collide-or-save
+: move-up
+  i := long player
+  load v1
+  if v1 > 0 then v1 -= 1
+  jump collide-or-save
+: move-down
+  i := long player
+  load v1
+  if v1 < 23 then v1 += 1
+  # Fall through
+
+: collide-or-save
+  # TODO: Check for colission
+  i := long player
+  save v1
+  return
+
+# Blocking "press any key" routine
+# (does play music though)
+# Returns pressed key in v5
+: wait-key-press
+  vA := 0
+: wait-key-press-loop
+  #clock-tick
+  if vA key then return
+  vA += 1
+  if vA != 16 then jump wait-key-press-loop
+  jump wait-key-press
+
+
 : display-buffer
-  # 4 times 8 lines of 32 bytes each = 1024 bytes
+: display-buffer-plane1
+  # 4 planes of 7.5 times 32 bytes each. 240 bytes per layer, 960 bytes total.
   # The image is layed out in consecutive vertical slices of 8 pixels wide
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+: display-buffer-plane1-plus-15
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
+: display-buffer-plane2
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+: display-buffer-plane2-plus-15
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
+: display-buffer-plane3
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+: display-buffer-plane3-plus-15
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
+: display-buffer-plane4
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+: display-buffer-plane4-plus-15
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+  :monitor display-buffer 960
+
+: background1-sprite
+  0b00001000
+  0b00100001
+  0b00000100
+  0b10000000
+  0b00010010
+  0b01000000
+  0b00000100
+  0b10010000
+: background2-sprite
+  0b00010000
+  0b00111000
+  0b11111100
+  0b11111111
+  0b11111111
+: background3-sprite
+  0b11100111
+  0b11000011
+  0b10000001
+  0b00000000
+  0b00000000
+
+: my-sprite
+  0b11100000
+  0b10011000
+  0b10000110
+  0b10000001
+  0b10000110
+  0b10011000
+  0b11100000
+
+: hud-top-sprite
+  0b00000001
+  0b01101101
+  0b01001101
+  0b00101001
+  0b01101001
+  0b00000001
+  0b01101101
+  0b00100101
+  0b01001001
+  0b01001101
+  0b00000001
+  0b00000001
+  0b00000001
+  0b01101001
+  0b01101101
+
+: hud-bottom-sprite
+  0b01001001
+  0b01000101
+  0b00000001
+  0b00101001
+  0b00101001
+  0b00101101
+  0b00100101
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
