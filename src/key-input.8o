@@ -16,29 +16,28 @@
 : move-right
   i := long player
   load v1
-  v0 += 1
+  if v0 < 55 then v0 += 1
   jump collide-or-save
 : move-left
   i := long player
   load v1
-  v0 -= 1
+  if v0 > 9 then v0 -= 1
   jump collide-or-save
 : move-up
   i := long player
   load v1
-  v1 -= 1
+  if v1 > 0 then v1 -= 1
   jump collide-or-save
 : move-down
   i := long player
   load v1
-  v1 += 1
+  if v1 < 23 then v1 += 1
   # Fall through
 
 : collide-or-save
   # TODO: Check for colission
   i := long player
   save v1
-  mark-screen-dirty
   return
 
 # Blocking "press any key" routine

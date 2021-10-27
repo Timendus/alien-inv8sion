@@ -4,66 +4,71 @@
   display-clear
   render-background
   render-player
+  render-hud
   display-copy
   return
 
 : render-background
   i := long tick
-  load vA - vA
+  load vE - vE
 
-  vA >>= vA
+  vE >>= vE
   v0 := 7
-  v0 &= vA
+  v0 &= vE
   v2 := 7
   v2 -= v0 # X
   v3 := 19 # Y
   #:breakpoint stop
   loop
     :unpack long background2-sprite
-    v4 := 5  # height
+    v4 := 5 # height
+    v5 := 1 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
   again
 
-  vA >>= vA
+  vE >>= vE
   v0 := 7
-  v0 &= vA
+  v0 &= vE
   v2 := 7
   v2 -= v0 # X
   v3 := 14 # Y
   #:breakpoint stop
   loop
     :unpack long background3-sprite
-    v4 := 5  # height
+    v4 := 5 # height
+    v5 := 1 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
   again
 
-  vA >>= vA
+  vE >>= vE
   v0 := 7
-  v0 &= vA
+  v0 &= vE
   v2 := 7
   v2 -= v0 # X
   v3 := 9 # Y
   loop
     :unpack long background2-sprite
-    v4 := 5  # height
+    v4 := 5 # height
+    v5 := 1 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
   again
 
-  vA >>= vA
+  vE >>= vE
   v0 := 7
-  v0 &= vA
+  v0 &= vE
   v2 := 7
   v2 -= v0 # X
   v3 := 0 # Y
   loop
     :unpack long background1-sprite
-    v4 := 8  # height
+    v4 := 8 # height
+    v5 := 1 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
@@ -76,9 +81,36 @@
   load v1
   v2 := v0 # X
   v3 := v1 # Y
+  v4 := 7 # height
+  v5 := 0 # plane
   :unpack long my-sprite
-  v4 := 5  # height
   display-sprite
+  v5 := 1 # plane
+  :unpack long my-sprite
+  display-sprite
+  return
+
+: render-hud
+  # Plane 1
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane1
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane1-plus-15
+  save vE
+
+  # Plane 2
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane2
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane2-plus-15
+  save vE
+
   return
 
 #data
@@ -106,8 +138,44 @@
   0b00000000
 
 : my-sprite
-  0b11010110
-  0b00111000
-  0b01111110
-  0b10101000
-  0b00100100
+  0b11100000
+  0b10011000
+  0b10000110
+  0b10000001
+  0b10000110
+  0b10011000
+  0b11100000
+
+: hud-top-sprite
+  0b00000001
+  0b01101101
+  0b01001101
+  0b00101001
+  0b01101001
+  0b00000001
+  0b01101101
+  0b00100101
+  0b01001001
+  0b01001101
+  0b00000001
+  0b00000001
+  0b00000001
+  0b01101001
+  0b01101101
+
+: hud-bottom-sprite
+  0b01001001
+  0b01000101
+  0b00000001
+  0b00101001
+  0b00101001
+  0b00101101
+  0b00100101
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001
+  0b00000001

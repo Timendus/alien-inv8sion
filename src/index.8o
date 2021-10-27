@@ -1,7 +1,6 @@
 #include "macros.8o"
 
 : main
-  monitors
   lores
 
 : main-redraw
