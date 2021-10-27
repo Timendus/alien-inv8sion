@@ -1,56 +1,56 @@
 # Show the contents of the display buffer on the screen
+# 24 x 2 + 6 = 53 instructions including call and return
+: display-copy-values
+  0 1 8 16 24 32 40 48 56 15
 : display-copy
-  :alias X v0
-  :alias Y v1
-  :alias N1 v2
-  :alias N2 v3
-  X := 0
-  N1 := 14
-  N2 := 8
-  i := long display-buffer
+  i := display-copy-values
+  load v9
+  i := display-buffer
   clear
-  loop
-    Y := 0
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 14
-    i += N1
-    Y += N1
-    sprite X Y 8
-    i += N2
-    X += N2
-  if X != 128 then again
+  sprite v0 v1 15   i += v9
+  sprite v0 v3 15   i += v9
+  sprite v2 v1 15   i += v9
+  sprite v2 v3 15   i += v9
+  sprite v3 v1 15   i += v9
+  sprite v3 v3 15   i += v9
+  sprite v4 v1 15   i += v9
+  sprite v4 v3 15   i += v9
+  sprite v5 v1 15   i += v9
+  sprite v5 v3 15   i += v9
+  sprite v6 v1 15   i += v9
+  sprite v6 v3 15   i += v9
+  sprite v7 v1 15   i += v9
+  sprite v7 v3 15   i += v9
+  sprite v8 v1 15   i += v9
+  sprite v8 v3 15
   return
 
+# Display buffer contains 8 * 15 * 2 bytes = 240 bytes per layer
+# 240 / 15 = 16. So either load 16 values 15 times or the other way around
+# 20 instructions including call and return (non-SCHIP version)
+: display-clear-values
+  0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0
 : display-clear
-  i := display-buffer
-  v0 := 0
-  v1 := 0
-  v2 := 0
-  v3 := 0
-  v4 := 0
-  v5 := 0
-  v6 := 0
-  v7 := 0
-  v8 := 0
   #if SCHIP
-    v9 := 8
+    i := display-clear-values
+    load vE
+    vF := 15
+    i := display-buffer
+    save vE  i += vF  save vE  i += vF  save vE  i += vF  save vE  i += vF
+    save vE  i += vF  save vE  i += vF  save vE  i += vF  save vE  i += vF
+    save vE  i += vF  save vE  i += vF  save vE  i += vF  save vE  i += vF
+    save vE  i += vF  save vE  i += vF  save vE  i += vF  save vE
+  #else
+    i := display-clear-values
+    load vF
+    i := display-buffer
+    save vF  save vF  save vF  save vF
+    save vF  save vF  save vF  save vF
+    save vF  save vF  save vF  save vF
+    save vF  save vF  save vF
   #end
-  loop
-    save v7
-    #if SCHIP
-      i += v9
-    #end
-    v8 += 1
-    if v8 == 128 then return
-  again
+  return
 
 # Render a sprite to the display buffer
 # v0, v1 = sprite address
@@ -59,7 +59,12 @@
 # v4 = height (in pixels)
 # Preserves X and Y
 # Destroys v0, v1, v4 - v7 and i
-# TODO: Don't render outside of buffer (dangerous!)
+
+# Overhead: 5 instructions
+# Per row: ~38 instructions
+# Per shift: 7 instructions
+# So for 8x8 sprite at bad alignment: 5 + 8 * (38 + 7*7) = 701 instructions
+# For 8x8 sprite at good alignment: 5 + 8 * (38 + 2) = 325 instructions
 : display-sprite
   :alias X v2
   :alias Y v3
@@ -75,8 +80,17 @@
   i := display-sprite-address
   save v1
 
+  # Normalize coordinates
+  v0 := 31
+  v3 &= v0
+  v0 := 63
+  v2 &= v0
+
   loop
-    if row == height then return
+    if row == height then return # Done
+    v0 := Y
+    v0 += row
+    if v0 == 30 then return # Overflowing bottom of screen, so done
 
     # Get the sprite data to put on the display buffer
     0xF0 0x00 # i := long ....
@@ -99,55 +113,35 @@
       offset -= 1
     again
 
-    # Write the new data to the buffer
-    display-buffer-address
-    load v0
-    v0 |= leftPart
-    temp1 := v0
-    #if SCHIP
-      vF := 64
-      i += vF
-    #else
-      vF := 63
-      i += vF
-    #end
-    load v0
-    v0 |= rightPart
-    temp2 := v0
+    # Calculate place in buffer
+    offset := X
+    offset >>= offset
+    offset >>= offset
+    offset >>= offset
+    i := long display-buffer
+    v0 := 30 # rows
+    loop
+      while offset != 0
+      i += v0
+      offset -= 1
+    again
+    i += Y
+    i += row
 
-    display-buffer-address
-    v0 := temp1
-    save v0
-    #if SCHIP
-      vF := 64
+    # Write the new data to the buffer
+    load v0 - v0 # Don't auto-increment i
+    v0 |= leftPart
+    save v0 - v0
+    if X < 56 begin
+      vF := 30
       i += vF
-    #else
-      vF := 63
-      i += vF
-    #end
-    v0 := temp2
-    save v0
+      load v0 - v0
+      v0 |= rightPart
+      save v0 - v0
+    end
 
     row += 1
   again
-
-# Get a pointer into the right bytes of the buffer
-: display-buffer-address
-  # Calculate place in buffer
-  offset := X
-  offset >>= offset
-  offset >>= offset
-  offset >>= offset
-  i := long display-buffer
-  v0 := 64
-  loop
-    while offset != 0
-    i += v0
-    offset -= 1
-  again
-  i += Y
-  i += row
-  return
 
 #data
 
