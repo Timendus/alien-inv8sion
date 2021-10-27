@@ -3,41 +3,34 @@
 # Updates the player data on input, checks for collisions
 # Destroys v0 - v3
 : check-keys
-  v0 := OCTO_KEY_A
-  if v0 key then jump move-left
-  v0 := OCTO_KEY_D
-  if v0 key then jump move-right
-  v0 := OCTO_KEY_W
-  if v0 key then jump move-up
-  v0 := OCTO_KEY_S
-  if v0 key then jump move-down
-  return
+  i := long player
+  load v0 - v2
 
-: move-right
-  i := long player
-  load v1
-  if v0 < 55 then v0 += 1
-  jump collide-or-save
-: move-left
-  i := long player
-  load v1
-  if v0 > 9 then v0 -= 1
-  jump collide-or-save
-: move-up
-  i := long player
-  load v1
-  if v1 > 0 then v1 -= 1
-  jump collide-or-save
-: move-down
-  i := long player
-  load v1
-  if v1 < 23 then v1 += 1
-  # Fall through
+  v3 := OCTO_KEY_A
+  if v3 key begin
+    if v0 > 9 then v0 -= 1
+  end
 
-: collide-or-save
-  # TODO: Check for colission
-  i := long player
-  save v1
+  v3 := OCTO_KEY_D
+  if v3 key begin
+    if v0 < 55 then v0 += 1
+  end
+
+  v3 := OCTO_KEY_W
+  if v3 key begin
+    if v1 > 0 then v1 -= 1
+  end
+
+  v3 := OCTO_KEY_S
+  if v3 key begin
+    if v1 < 23 then v1 += 1
+  end
+
+  v3 := OCTO_KEY_E
+  if v3 key then v2 := 1
+  if v3 -key then v2 := 0
+
+  save v0 - v2
   return
 
 # Blocking "press any key" routine

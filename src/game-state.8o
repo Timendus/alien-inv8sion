@@ -1,12 +1,12 @@
 
 : player
   10 10 # X, Y
-: player-orientation
-  0 # orientation
+: shooting
+  0
 
 : tick
   0
 
 :monitor player 2
-:monitor player-orientation 1
+:monitor shooting 1
 :monitor tick 1
