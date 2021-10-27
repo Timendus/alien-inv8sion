@@ -118,12 +118,50 @@
   save vF  save vF  save vF
   return
 
+# v0, v1 = complex sprite address
+# v2 = X coordinate
+# v3 = Y coordinate
+# Preserves v2 - v3
+# Destroys v0, v1, v4 - vA and i
+: display-complex-sprite
+  :alias layer vA
+
+  layer := 0
+  i := display-complex-sprite-address
+  save v1
+
+  loop
+    # Get i to point to the complex sprite
+    0xF0 0x00 # i := long ....
+  : display-complex-sprite-address
+    0x00 0x00
+    load v1
+    v4 := v1
+
+    # Done all layers? Then return
+    if layer == v0 then return
+
+    # Get pointer to the right sprite data
+    i += layer
+    i += layer
+    i += layer
+
+    # Get plane
+    load v0
+    v5 := v0
+
+    load v1
+    display-sprite
+
+    layer += 1
+  again
+
 # Render a sprite to the display buffer
 # v0, v1 = sprite address
 # v2 = X coordinate
 # v3 = Y coordinate
 # v4 = height (in pixels)
-# v5 = target plane (0-3)
+# v5 = target plane (0-3, 4-7 for mask)
 # Preserves v2 - v5
 # Destroys v0, v1, v6 - v9 and i
 
@@ -187,8 +225,10 @@
     offset >>= offset
     i := long display-buffer
     # Get right plane
-    v0 := 240
     temp1 := targetplane
+    v0 := 3
+    temp1 &= v0
+    v0 := 240
     loop
       while temp1 > 0
       i += v0
@@ -207,13 +247,25 @@
 
     # Write the new data to the buffer
     load v0 - v0 # Don't auto-increment i
-    v0 |= leftPart
+    if targetplane > 3 begin
+      temp1 := 0xFF
+      leftPart ^= temp1
+      v0 &= leftPart
+    else
+      v0 |= leftPart
+    end
     save v0 - v0
     if X < 56 begin
       vF := 30
       i += vF
       load v0 - v0
-      v0 |= rightPart
+      if targetplane > 3 begin
+        temp1 := 0xFF
+        rightPart ^= temp1
+        v0 &= rightPart
+      else
+        v0 |= rightPart
+      end
       save v0 - v0
     end
 
