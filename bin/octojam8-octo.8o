@@ -216,7 +216,7 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-    s8plane 4
+    s8plane 1
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
@@ -234,7 +234,7 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-    s8plane 8
+    s8plane 1
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
