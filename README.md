@@ -81,3 +81,4 @@ shooting back or colliding in to you. I think I have to sleep on this 😄
 * [x] Keep score of health and points
 * [x] Something resembling levels?
 * [ ] More pretty background pixel art
+* [ ] Add a big bomb that you can trigger once in a while

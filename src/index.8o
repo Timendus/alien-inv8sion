@@ -45,7 +45,7 @@
     i := long enemies
     i += vE
     load v0 - v3
-    if v0 != 0 begin # Don't blow up dead aliens
+    if v0 != 0 begin # Don't blow up dead aliens TODO: don't blow up exploding aliens
       v2 >>= v2
       v2 >>= v2
       if v2 > vC begin # Enemy is in front of player
