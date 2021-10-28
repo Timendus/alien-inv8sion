@@ -2,3 +2,7 @@
 	:byte { 0xF0 + N }
 	:byte 0x01
 }
+
+:const NUM_ENEMIES 30
+:const ENEMY_SIZE 5
+:calc ENEMY_BYTES { NUM_ENEMIES * ENEMY_SIZE }

@@ -14,7 +14,9 @@
 
   clock-tick
   check-keys
+  check-shots
   render-scene
+  explode-enemies
   jump main-redraw
 
 : clock-tick
@@ -22,24 +24,55 @@
   load v0 - v0 # Don't auto-increment i
   v0 += 1
   save v0
-
-  if v0 == 0 begin
-    i := long wave
-    load v0 - v0
-    v0 += 1
-    save v0
-
-    if v0 == 0 begin
-      i := long level
-      load v0 - v0
-      v0 += 1
-      save v0
-    end
-
-    revive-enemies
-  end
-
+  vF := 0b00111111
+  v0 &= vF
+  if v0 == 0 then revive-enemies
   return
+
+: check-shots
+  # Are we shooting?
+  i := long shooting
+  load v0
+  if v0 == 0 then return
+
+  # Check if we shot any aliens
+  i := long player
+  load v1
+  vC := v0
+  vD := v1
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v3
+    if v0 != 0 begin # Don't blow up dead aliens
+      v2 >>= v2
+      v2 >>= v2
+      if v2 > vC begin # Enemy is in front of player
+        v3 >>= v3
+        v3 >>= v3
+        if v3 == vD begin # Enemy is on same height as player
+          # Hit! Set enemy to explosion
+          v0 := 3
+          save v0
+          # Increast score
+          i := long score
+          load v0 - v0
+          v0 += 1
+          save v0
+          # Next level if score overflows
+          if v0 == 0 begin
+            i := long level
+            load v0 - v0
+            v0 += 1
+            save v0
+          end
+        end
+      end
+    end
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
 
 #include "enemies.8o"
 #include "renderer1.8o"

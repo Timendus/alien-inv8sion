@@ -83,3 +83,67 @@
   0b01100110
   0b00111100
   0b00011000
+
+: explosion1-sprite
+  7 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer explosion1-sprite-m
+  5 # Mask
+  :pointer explosion1-sprite-m
+  6 # Mask
+  :pointer explosion1-sprite-m
+  7 # Mask
+  :pointer explosion1-sprite-m
+  0 # Plane 1
+  :pointer explosion1-sprite-p1
+  1 # Plane 1
+  :pointer explosion1-sprite-p1
+  2 # Plane 2
+  :pointer explosion1-sprite-m
+
+: explosion1-sprite-m
+  0b00000000
+  0b00111100
+  0b01111110
+  0b00111100
+  0b00000000
+
+: explosion1-sprite-p1
+  0b00000000
+  0b00011000
+  0b00111100
+  0b00011000
+  0b00000000
+
+: explosion2-sprite
+  7 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer explosion2-sprite-m
+  5 # Mask
+  :pointer explosion2-sprite-m
+  6 # Mask
+  :pointer explosion2-sprite-m
+  7 # Mask
+  :pointer explosion2-sprite-m
+  0 # Plane 1
+  :pointer explosion2-sprite-p1
+  1 # Plane 1
+  :pointer explosion2-sprite-p1
+  2 # Plane 2
+  :pointer explosion2-sprite-m
+
+: explosion2-sprite-m
+  0b01111110
+  0b11111111
+  0b11111111
+  0b11111111
+  0b01111110
+
+: explosion2-sprite-p1
+  0b01111110
+  0b11111011
+  0b11011111
+  0b11110111
+  0b01111110

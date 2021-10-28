@@ -1,4 +1,5 @@
 #include "display.8o"
+#include "scores.8o"
 
 : render-scene
   display-clear
@@ -6,6 +7,8 @@
   render-enemies
   render-player
   render-hud
+  render-score
+  render-level
   display-copy
   return
 
@@ -119,9 +122,12 @@
 # This subroutine is also responsible for updating the enemy positions and for
 # bouncing them at the edges of the screen.
 : render-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
   vE := 0
   loop
-    if vE == 50 then return # Checked all ten enemies
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies
 
     i := long enemies
     i += vE
@@ -139,6 +145,14 @@
       if v2 == 0 begin
         # Disappear on the left (and generate new enemy)
         generate-enemy
+        i := long score
+        load v0 - v0
+        if v0 > 9 begin
+          v0 -= 10
+        else
+          v0 := 0
+        end
+        save v0
       else
         # Bounce top and bottom
         if v3 == 0  then v4 := 1
@@ -150,6 +164,8 @@
         # Select the right sprite
         if v0 == 1 begin :unpack long enemy1-sprite end
         if v0 == 2 begin :unpack long enemy2-sprite end
+        if v0 == 3 begin :unpack long explosion1-sprite end
+        if v0 == 4 begin :unpack long explosion2-sprite end
 
         # And show that cannon fodder!
         display-complex-sprite

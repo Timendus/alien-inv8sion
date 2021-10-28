@@ -1,5 +1,29 @@
+# Make exploding enemies go boom
+: explode-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 4 begin
+      generate-enemy
+    end
+    if v0 == 3 begin
+      v0 := 4
+      save v0
+    end
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
 # Revive enemies that have been disabled
 : revive-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
   vE := 0
   loop
     i := long enemies
@@ -7,17 +31,20 @@
     load v0 - v0
     if v0 == 0 then generate-enemy
     vE += 5
-    if vE == 50 then return # Checked all ten enemies?
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
 
 # Generate a new wave of enemies
 : generate-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
   vE := 0
   i := long enemies
   loop
     generate-enemy
     vE += 1
-    if vE == 10 then return # Generated all ten enemies?
+    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
   again
 
 : generate-enemy
@@ -38,6 +65,8 @@
       v1 := -2 # 37.5% chance of -2
     end
   end
+  # Add the current level as a speed boost (level must be in vC)
+  v1 -= vC
   # v2 / X coordinate: always start on the right, fixed point 6.2 bits number
   v2 := 0xFF
   # v3 / Y coordinate: random between 0 and 15, fixed point 6.2 bits number
@@ -56,8 +85,28 @@
 
 #data
 
-: enemies
+: enemies # 30 of 'em
   0 0 0 0 0 # Type, Vx, X, Y, Vy
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
   0 0 0 0 0
   0 0 0 0 0
   0 0 0 0 0

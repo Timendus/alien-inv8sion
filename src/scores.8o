@@ -1,0 +1,54 @@
+: render-score
+  i := long score
+  load v0
+  i := long numbers-bcd
+  bcd v0
+  load v2
+  vA := v1
+  vB := v2
+  v2 := 4
+  v3 := 0
+  render-number
+  v3 += 5
+  v0 := vA
+  render-number
+  v3 += 5
+  v0 := vB
+  jump render-number
+
+: render-level
+  i := long level
+  load v0
+  i := long numbers-bcd
+  bcd v0
+  load v2
+  vA := v1
+  vB := v2
+  v2 := 4
+  v3 := 16
+  render-number
+  v3 += 5
+  v0 := vA
+  render-number
+  v3 += 5
+  v0 := vB
+  jump render-number
+
+# v0 = number
+# v2 = X
+# v3 = Y
+: render-number
+  i := long numbers
+  i += v0
+  i += v0
+  load v1
+  v4 := 4 # height
+  v5 := 0 # plane
+  jump display-sprite
+
+#data
+
+: numbers-bcd
+  0 0 0
+
+#include "sprites/numbers.8o"

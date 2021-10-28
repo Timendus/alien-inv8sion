@@ -1,0 +1,73 @@
+#data
+
+: numbers
+  :pointer number-zero
+  :pointer number-one
+  :pointer number-two
+  :pointer number-three
+  :pointer number-four
+  :pointer number-five
+  :pointer number-six
+  :pointer number-seven
+  :pointer number-eight
+  :pointer number-nine
+
+: number-zero
+  0b00000000
+  0b11000000
+  0b11000000
+  0b11000000
+
+: number-one
+  0b01000000
+  0b01000000
+  0b01000000
+  0b01000000
+
+: number-two
+  0b11000000
+  0b01000000
+  0b10000000
+  0b11000000
+
+: number-three
+  0b10000000
+  0b01000000
+  0b01000000
+  0b10000000
+
+: number-four
+  0b10000000
+  0b10000000
+  0b11000000
+  0b01000000
+
+: number-five
+  0b11000000
+  0b10000000
+  0b01000000
+  0b11000000
+
+: number-six
+  0b11000000
+  0b10000000
+  0b11000000
+  0b11000000
+
+: number-seven
+  0b11000000
+  0b01000000
+  0b10000000
+  0b10000000
+
+: number-eight
+  0b11000000
+  0b11000000
+  0b11000000
+  0b11000000
+
+: number-nine
+  0b11000000
+  0b11000000
+  0b01000000
+  0b11000000
