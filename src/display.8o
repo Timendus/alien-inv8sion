@@ -45,7 +45,11 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-  s8plane 4
+  #if OCTO
+    s8plane 1
+  #else
+    s8plane 4
+  #end
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
@@ -63,7 +67,11 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-  s8plane 8
+  #if OCTO
+    s8plane 1
+  #else
+    s8plane 8
+  #end
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
