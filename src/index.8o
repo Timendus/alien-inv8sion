@@ -2,6 +2,7 @@
 
 : main
   lores
+  generate-enemies
 
 : main-redraw
   v0 := 1
@@ -35,30 +36,12 @@
       save v0
     end
 
-    generate-enemies
+    revive-enemies
   end
 
   return
 
-: generate-enemies
-  # Generate a new wave of enemies every full rotation of tick
-  vE := 0
-  i := long enemies
-  loop
-    v0 := random 3
-    v1 := -1
-    vF := random 3
-    v1 -= vF
-    v2 := 0xFF
-    v3 := random 0x7C
-    v4 := 1
-    vF := random 3
-    v4 -= vF
-    save v4
-    vE += 1
-    if vE == 10 then return # Generated all ten enemies?
-  again
-
+#include "enemies.8o"
 #include "renderer1.8o"
 #include "game-state.8o"
 #include "key-input.8o"

@@ -1,0 +1,71 @@
+# Revive enemies that have been disabled
+: revive-enemies
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 0 then generate-enemy
+    vE += 5
+    if vE == 50 then return # Checked all ten enemies?
+  again
+
+# Generate a new wave of enemies
+: generate-enemies
+  vE := 0
+  i := long enemies
+  loop
+    generate-enemy
+    vE += 1
+    if vE == 10 then return # Generated all ten enemies?
+  again
+
+: generate-enemy
+  # v0 / Type: 0, 1 or 2 (0 most likely)
+  v0 := random 3
+  if v0 == 3 then v0 := 0
+  # v1 / Vx: Negative number from -1 to -3
+  v2 := random 7
+  v2 >>= v2
+  if vF == 1 begin # 50% chance of -1
+    v1 := -1
+  else
+    v1 := 3
+    v2 &= v1
+    if v2 == 3 begin
+      v1 := -3 # 12.5% chance of -3
+    else
+      v1 := -2 # 37.5% chance of -2
+    end
+  end
+  # v2 / X coordinate: always start on the right, fixed point 6.2 bits number
+  v2 := 0xFF
+  # v3 / Y coordinate: random between 0 and 15, fixed point 6.2 bits number
+  v3 := random 0x0F
+  v3 += 5
+  v3 <<= v3
+  v3 <<= v3
+  # v4 / Vy: Number from -1 to 1 (0 most likely)
+  v4 := 1
+  vF := random 3
+  v4 -= vF
+  if v4 == -2 then v4 := 0
+  # Save all values for this enemy
+  save v4
+  return
+
+#data
+
+: enemies
+  0 0 0 0 0 # Type, Vx, X, Y, Vy
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+
+:monitor enemies 50
