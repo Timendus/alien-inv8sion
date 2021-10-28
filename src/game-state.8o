@@ -6,7 +6,26 @@
 
 : tick
   0
+: wave
+  0
+: level
+  0
+
+: enemies
+  1 -2 140 60 0 # Type, Vx, X, Y, Vy
+  2 -3 145 125 -1
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
 
 :monitor player 2
 :monitor shooting 1
 :monitor tick 1
+:monitor wave 1
+:monitor level 1
+:monitor enemies 50

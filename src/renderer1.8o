@@ -117,15 +117,43 @@
   return
 
 : render-enemies
-  v2 := 40
-  v3 := 13
-  :unpack long enemy1-sprite
-  display-complex-sprite
+  vE := 0
+  loop
+    if vE == 50 then return # Checked all ten enemies
 
-  v2 := 50
-  v3 := 18
-  :unpack long enemy2-sprite
-  jump display-complex-sprite
+    i := long enemies
+    i += vE
+    load v0 - v4 # Don't auto-increment i
+
+    if v0 != 0 begin # Is there an enemy in this slot?
+      v2 += v1
+      v3 += v4
+      save v0 - v4 # Don't auto-increment i
+
+      # Interpret X and Y coordinates as fixed point floats
+      v2 >>= v2 v2 >>= v2
+      v3 >>= v3 v3 >>= v3
+
+      # Disappear on the left, bounce top and bottom
+      v5 := 0xFF
+      if v2 == 0  then v0 := 0
+      if v3 == 1  then v4 ^= v5
+      if v3 == 25 then v4 ^= v5
+      save v0 - v0
+      v5 := 4
+      i += v5
+      save v4 - v4
+
+      # Select the right sprite
+      if v0 == 1 begin :unpack long enemy1-sprite end
+      if v0 == 2 begin :unpack long enemy2-sprite end
+      if v0 == 3 begin :unpack long enemy1-sprite end
+
+      # And show that cannon fodder!
+      display-complex-sprite
+    end
+    vE += 5
+  again
 
 : render-hud
   # Plane 1
