@@ -48,12 +48,36 @@ changed into a spaceship that could shoot lasers, and we were off to the races.
 
 ### Day three: Give me something to shoot!
 
+Shooting lasers is no fun without anything to shoot, so on day three I added the
+enemy spaceships. An endless stream of enemy ships had to come in from the
+right, with the player having to keep them at bay. A "fast paced version of
+space invaders" seemed like a good place to start.
+
+To accomplish this, I created a table in memory, 30 rows long, that holds the
+properties of all the alien ships. Every so often the game triggers half of
+those rows to become one of two types of enemy ships. When the ship gets shot,
+its type changes to "explosion" (which is crudely animated) and then gets
+another 50% chance to restart. The same goes for ships that reach the other side
+of the screen, but without the explosions. All in all, this gives the player
+a lot to shoot at, and it feels pretty dynamic, like waves of enemies attacking.
+
+Of course shooting alien spaceships is very little fun without a counter keeping
+track of how many baddies you have shot. So I added a score counter that counts
+up to 255. When it overflows you go up a level, and the ships get faster. When
+alien ships reach the left side of the screen, you lose ten points. So at some
+point it gets pretty difficult to get to the next level.
+
+I'm not sure where to go next. It's not really fun to get stuck on some level.
+But it can be a competition with friends to see who gets the furthest, I guess.
+Also, I feel like there should be some danger involved, like the enemies
+shooting back or colliding in to you. I think I have to sleep on this 😄
+
 ## TODO LIST
 
-* [ ] Add moving enemies
-* [ ] Allow shooting enemies
-* [ ] Make enemies shoot you
-* [ ] Make collisions with enemies hurt
-* [ ] Keep score of health and points
-* [ ] Something resembling levels?
+* [x] Add moving enemies
+* [x] Allow shooting enemies
+* [ ] Make enemies shoot you?
+* [ ] Make collisions with enemies hurt?
+* [x] Keep score of health and points
+* [x] Something resembling levels?
 * [ ] More pretty background pixel art
