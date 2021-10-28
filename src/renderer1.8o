@@ -3,8 +3,8 @@
 : render-scene
   display-clear
   render-background
-  render-player
   render-enemies
+  render-player
   render-hud
   display-copy
   return
@@ -95,28 +95,23 @@
   if v0 == 0 then return
 
   # Show lasers
-  v0 := 3
-  v2 += v0 # X
+  v2 += 3 # X
   i := tick
   load v0
   v1 := 3
   v0 &= v1
   v2 += v0
-  v0 := 1
-  v3 += v0 # Y
+  v3 += 1 # Y
   v4 := 1 # height
   v5 := 2 # plane
   loop
     :unpack long laser-sprite
     display-sprite
-    v0 := 4
-    v3 += v0
+    v3 += 4
     :unpack long laser-sprite
     display-sprite
-    v0 := 4
-    v3 -= v0
-    v0 := 6
-    v2 += v0
+    v3 -= 4
+    v2 += 6
     if v2 < 60 then
   again
   return
