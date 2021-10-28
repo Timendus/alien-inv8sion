@@ -21,7 +21,43 @@
   load v0 - v0 # Don't auto-increment i
   v0 += 1
   save v0
+
+  if v0 == 0 begin
+    i := long wave
+    load v0 - v0
+    v0 += 1
+    save v0
+
+    if v0 == 0 begin
+      i := long level
+      load v0 - v0
+      v0 += 1
+      save v0
+    end
+
+    generate-enemies
+  end
+
   return
+
+: generate-enemies
+  # Generate a new wave of enemies every full rotation of tick
+  vE := 0
+  i := long enemies
+  loop
+    v0 := random 3
+    v1 := -1
+    vF := random 3
+    v1 -= vF
+    v2 := 0xFF
+    v3 := random 0x7C
+    v4 := 1
+    vF := random 3
+    v4 -= vF
+    save v4
+    vE += 1
+    if vE == 10 then return # Generated all ten enemies?
+  again
 
 #include "renderer1.8o"
 #include "game-state.8o"
