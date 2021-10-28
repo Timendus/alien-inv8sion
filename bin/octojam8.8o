@@ -3,9 +3,14 @@
 	:byte 0x01
 }
 
+:const NUM_ENEMIES 30
+:const ENEMY_SIZE 5
+:calc ENEMY_BYTES { NUM_ENEMIES * ENEMY_SIZE }
+
 
 : main
   lores
+  generate-enemies
 
 : main-redraw
   v0 := 1
@@ -17,7 +22,10 @@
 
   clock-tick
   check-keys
+  check-shots
+  #check-collisions
   render-scene
+  explode-enemies
   jump main-redraw
 
 : clock-tick
@@ -25,7 +33,141 @@
   load v0 - v0 # Don't auto-increment i
   v0 += 1
   save v0
+  vF := 0b00111111
+  v0 &= vF
+  if v0 == 0 then revive-enemies
   return
+
+: check-shots
+  # Are we shooting?
+  i := long shooting
+  load v0
+  if v0 == 0 then return
+
+  # Check if we shot any aliens
+  i := long player
+  load v1
+  vC := v0
+  vD := v1
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v3
+    if v0 != 0 begin # Don't blow up dead aliens
+      v2 >>= v2
+      v2 >>= v2
+      if v2 > vC begin # Enemy is in front of player
+        v3 >>= v3
+        v3 >>= v3
+        if v3 == vD begin # Enemy is on same height as player
+          # Hit! Set enemy to explosion
+          v0 := 3
+          save v0
+          # Increast score
+          i := long score
+          load v0 - v0
+          v0 += 1
+          save v0
+          # Next level if score overflows
+          if v0 == 0 begin
+            i := long level
+            load v0 - v0
+            v0 += 1
+            save v0
+          end
+        end
+      end
+    end
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+# Make exploding enemies go boom
+: explode-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 4 begin
+      generate-enemy
+    end
+    if v0 == 3 begin
+      v0 := 4
+      save v0
+    end
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+# Revive enemies that have been disabled
+: revive-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 0 then generate-enemy
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+# Generate a new wave of enemies
+: generate-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  i := long enemies
+  loop
+    generate-enemy
+    vE += 1
+    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
+  again
+
+: generate-enemy
+  # v0 / Type: 0, 1 or 2 (0 most likely)
+  v0 := random 3
+  if v0 == 3 then v0 := 0
+  # v1 / Vx: Negative number from -1 to -3
+  v2 := random 7
+  v2 >>= v2
+  if vF == 1 begin # 50% chance of -1
+    v1 := -1
+  else
+    v1 := 3
+    v2 &= v1
+    if v2 == 3 begin
+      v1 := -3 # 12.5% chance of -3
+    else
+      v1 := -2 # 37.5% chance of -2
+    end
+  end
+  # Add the current level as a speed boost (level must be in vC)
+  v1 -= vC
+  # v2 / X coordinate: always start on the right, fixed point 6.2 bits number
+  v2 := 0xFF
+  # v3 / Y coordinate: random between 0 and 15, fixed point 6.2 bits number
+  v3 := random 0x0F
+  v3 += 5
+  v3 <<= v3
+  v3 <<= v3
+  # v4 / Vy: Number from -1 to 1 (0 most likely)
+  v4 := 1
+  vF := random 3
+  v4 -= vF
+  if v4 == -2 then v4 := 0
+  # Save all values for this enemy
+  save v4
+  return
+
 
 # Show the contents of the display buffer on the screen
 : display-copy-values
@@ -147,12 +289,50 @@
   save vF  save vF  save vF
   return
 
+# v0, v1 = complex sprite address
+# v2 = X coordinate
+# v3 = Y coordinate
+# Preserves v2 - v3
+# Destroys v0, v1, v4 - vA and i
+: display-complex-sprite
+  :alias layer vA
+
+  layer := 0
+  i := display-complex-sprite-address
+  save v1
+
+  loop
+    # Get i to point to the complex sprite
+    0xF0 0x00 # i := long ....
+  : display-complex-sprite-address
+    0x00 0x00
+    load v1
+    v4 := v1
+
+    # Done all layers? Then return
+    if layer == v0 then return
+
+    # Get pointer to the right sprite data
+    i += layer
+    i += layer
+    i += layer
+
+    # Get plane
+    load v0
+    v5 := v0
+
+    load v1
+    display-sprite
+
+    layer += 1
+  again
+
 # Render a sprite to the display buffer
 # v0, v1 = sprite address
 # v2 = X coordinate
 # v3 = Y coordinate
 # v4 = height (in pixels)
-# v5 = target plane (0-3)
+# v5 = target plane (0-3, 4-7 for mask)
 # Preserves v2 - v5
 # Destroys v0, v1, v6 - v9 and i
 
@@ -216,8 +396,10 @@
     offset >>= offset
     i := long display-buffer
     # Get right plane
-    v0 := 240
     temp1 := targetplane
+    v0 := 3
+    temp1 &= v0
+    v0 := 240
     loop
       while temp1 > 0
       i += v0
@@ -236,13 +418,25 @@
 
     # Write the new data to the buffer
     load v0 - v0 # Don't auto-increment i
-    v0 |= leftPart
+    if targetplane > 3 begin
+      temp1 := 0xFF
+      leftPart ^= temp1
+      v0 &= leftPart
+    else
+      v0 |= leftPart
+    end
     save v0 - v0
     if X < 56 begin
       vF := 30
       i += vF
       load v0 - v0
-      v0 |= rightPart
+      if targetplane > 3 begin
+        temp1 := 0xFF
+        rightPart ^= temp1
+        v0 &= rightPart
+      else
+        v0 |= rightPart
+      end
       save v0 - v0
     end
 
@@ -250,12 +444,65 @@
   again
 
 
+: render-score
+  i := long score
+  load v0
+  i := long numbers-bcd
+  bcd v0
+  load v2
+  vA := v1
+  vB := v2
+  v2 := 4
+  v3 := 0
+  render-number
+  v3 += 5
+  v0 := vA
+  render-number
+  v3 += 5
+  v0 := vB
+  jump render-number
+
+: render-level
+  i := long level
+  load v0
+  i := long numbers-bcd
+  bcd v0
+  load v2
+  vA := v1
+  vB := v2
+  v2 := 4
+  v3 := 16
+  render-number
+  v3 += 5
+  v0 := vA
+  render-number
+  v3 += 5
+  v0 := vB
+  jump render-number
+
+# v0 = number
+# v2 = X
+# v3 = Y
+: render-number
+  i := long numbers
+  i += v0
+  i += v0
+  load v1
+  v4 := 4 # height
+  v5 := 0 # plane
+  jump display-sprite
+
+
+
 
 : render-scene
   display-clear
   render-background
+  render-enemies
   render-player
   render-hud
+  render-score
+  render-level
   display-copy
   return
 
@@ -273,7 +520,7 @@
   loop
     :unpack long background2-sprite
     v4 := 5 # height
-    v5 := 1 # plane
+    v5 := 3 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
@@ -289,7 +536,7 @@
   loop
     :unpack long background3-sprite
     v4 := 5 # height
-    v5 := 1 # plane
+    v5 := 3 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
@@ -304,7 +551,7 @@
   loop
     :unpack long background2-sprite
     v4 := 5 # height
-    v5 := 1 # plane
+    v5 := 3 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
@@ -319,7 +566,13 @@
   loop
     :unpack long background1-sprite
     v4 := 8 # height
+    v5 := 0 # plane
+    display-sprite
+    :unpack long background1-sprite
     v5 := 1 # plane
+    display-sprite
+    :unpack long background1-sprite
+    v5 := 2 # plane
     display-sprite
     v2 += 8
     if v2 < 64 then
@@ -329,17 +582,91 @@
 
 : render-player
   i := player
-  load v1
-  v2 := v0 # X
-  v3 := v1 # Y
-  v4 := 7 # height
-  v5 := 0 # plane
-  :unpack long my-sprite
-  display-sprite
-  v5 := 1 # plane
-  :unpack long my-sprite
-  display-sprite
+  load v2 - v3 # X and Y
+  :unpack long player-sprite
+  display-complex-sprite
+
+  # Are we shooting?
+  i := shooting
+  load v0
+  if v0 == 0 then return
+
+  # Show lasers
+  v2 += 3 # X
+  i := tick
+  load v0
+  v1 := 3
+  v0 &= v1
+  v2 += v0
+  v3 += 1 # Y
+  v4 := 1 # height
+  v5 := 2 # plane
+  loop
+    :unpack long laser-sprite
+    display-sprite
+    v3 += 4
+    :unpack long laser-sprite
+    display-sprite
+    v3 -= 4
+    v2 += 6
+    if v2 < 60 then
+  again
   return
+
+# This subroutine is also responsible for updating the enemy positions and for
+# bouncing them at the edges of the screen.
+: render-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies
+
+    i := long enemies
+    i += vE
+    load v0 - v4 # Don't auto-increment i
+
+    if v0 != 0 begin # Is there an enemy in this slot?
+      v2 += v1
+      v3 += v4
+      save v0 - v4 # Don't auto-increment i
+
+      # Interpret X and Y coordinates as fixed point floats
+      v2 >>= v2 v2 >>= v2
+      v3 >>= v3 v3 >>= v3
+
+      if v2 == 0 begin
+        # Disappear on the left (and generate new enemy)
+        generate-enemy
+        i := long score
+        load v0 - v0
+        if v0 > 9 begin
+          v0 -= 10
+        else
+          v0 := 0
+        end
+        save v0
+      else
+        # Bounce top and bottom
+        if v3 == 0  then v4 := 1
+        if v3 == 25 then v4 := -1
+        v5 := 4
+        i += v5
+        save v4 - v4
+
+        # Select the right sprite
+        if v0 == 1 begin :unpack long enemy1-sprite end
+        if v0 == 2 begin :unpack long enemy2-sprite end
+        if v0 == 3 begin :unpack long explosion1-sprite end
+        if v0 == 4 begin :unpack long explosion2-sprite end
+
+        # And show that cannon fodder!
+        display-complex-sprite
+      end
+    end
+    vE += 5
+  again
 
 : render-hud
   # Plane 1
@@ -362,62 +689,87 @@
   i := long display-buffer-plane2-plus-15
   save vE
 
+  # Plane 2
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane3
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane3-plus-15
+  save vE
+
+  # Plane 2
+  i := long hud-top-sprite
+  load vE
+  i := long display-buffer-plane4
+  save vE
+  i := long hud-bottom-sprite
+  load vE
+  i := long display-buffer-plane4-plus-15
+  save vE
+
   return
+
+
+
+
 
 
 
 : player
   10 10 # X, Y
-: player-orientation
-  0 # orientation
+: shooting
+  0
 
 : tick
   0
+: wave
+  0
+: level
+  0
+: score
+  0
 
 :monitor player 2
-:monitor player-orientation 1
+:monitor shooting 1
 :monitor tick 1
+:monitor wave 1
+:monitor level 1
 
 #####################
 # Non-blocking key input check
 # Updates the player data on input, checks for collisions
 # Destroys v0 - v3
 : check-keys
-  v0 := OCTO_KEY_A
-  if v0 key then jump move-left
-  v0 := OCTO_KEY_D
-  if v0 key then jump move-right
-  v0 := OCTO_KEY_W
-  if v0 key then jump move-up
-  v0 := OCTO_KEY_S
-  if v0 key then jump move-down
-  return
+  i := long player
+  load v0 - v2
 
-: move-right
-  i := long player
-  load v1
-  if v0 < 55 then v0 += 1
-  jump collide-or-save
-: move-left
-  i := long player
-  load v1
-  if v0 > 9 then v0 -= 1
-  jump collide-or-save
-: move-up
-  i := long player
-  load v1
-  if v1 > 0 then v1 -= 1
-  jump collide-or-save
-: move-down
-  i := long player
-  load v1
-  if v1 < 23 then v1 += 1
-  # Fall through
+  v3 := OCTO_KEY_A
+  if v3 key begin
+    if v0 > 9 then v0 -= 1
+  end
 
-: collide-or-save
-  # TODO: Check for colission
-  i := long player
-  save v1
+  v3 := OCTO_KEY_D
+  if v3 key begin
+    if v0 < 55 then v0 += 1
+  end
+
+  v3 := OCTO_KEY_W
+  if v3 key begin
+    if v1 > 0 then v1 -= 1
+  end
+
+  v3 := OCTO_KEY_S
+  if v3 key begin
+    if v1 < 23 then v1 += 1
+  end
+
+  v3 := OCTO_KEY_E
+  if v3 key then v2 := 1
+  if v3 -key then v2 := 0
+
+  save v0 - v2
   return
 
 # Blocking "press any key" routine
@@ -432,6 +784,40 @@
   if vA != 16 then jump wait-key-press-loop
   jump wait-key-press
 
+
+: enemies # 30 of 'em
+  0 0 0 0 0 # Type, Vx, X, Y, Vy
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+  0 0 0 0 0
+
+:monitor enemies 50
 
 : display-buffer
 : display-buffer-plane1
@@ -484,7 +870,81 @@
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
-  :monitor display-buffer 960
+: numbers-bcd
+  0 0 0
+
+
+: numbers
+  :pointer number-zero
+  :pointer number-one
+  :pointer number-two
+  :pointer number-three
+  :pointer number-four
+  :pointer number-five
+  :pointer number-six
+  :pointer number-seven
+  :pointer number-eight
+  :pointer number-nine
+
+: number-zero
+  0b00000000
+  0b11000000
+  0b11000000
+  0b11000000
+
+: number-one
+  0b01000000
+  0b01000000
+  0b01000000
+  0b01000000
+
+: number-two
+  0b11000000
+  0b01000000
+  0b10000000
+  0b11000000
+
+: number-three
+  0b10000000
+  0b01000000
+  0b01000000
+  0b10000000
+
+: number-four
+  0b10000000
+  0b10000000
+  0b11000000
+  0b01000000
+
+: number-five
+  0b11000000
+  0b10000000
+  0b01000000
+  0b11000000
+
+: number-six
+  0b11000000
+  0b10000000
+  0b11000000
+  0b11000000
+
+: number-seven
+  0b11000000
+  0b01000000
+  0b10000000
+  0b10000000
+
+: number-eight
+  0b11000000
+  0b11000000
+  0b11000000
+  0b11000000
+
+: number-nine
+  0b11000000
+  0b11000000
+  0b01000000
+  0b11000000
 
 : background1-sprite
   0b00001000
@@ -495,12 +955,14 @@
   0b01000000
   0b00000100
   0b10010000
+
 : background2-sprite
   0b00010000
   0b00111000
   0b11111100
   0b11111111
   0b11111111
+
 : background3-sprite
   0b11100111
   0b11000011
@@ -508,45 +970,230 @@
   0b00000000
   0b00000000
 
-: my-sprite
+: player-sprite
+  6 # Number of layers
+  7 # Height
+  4 # Mask
+  :pointer player-sprite-m
+  5 # Mask
+  :pointer player-sprite-m
+  6 # Mask
+  :pointer player-sprite-m
+  7 # Mask
+  :pointer player-sprite-m
+  1 # Plane 1
+  :pointer player-sprite-p1
+  2 # Plane 3
+  :pointer player-sprite-p2
+
+: player-sprite-m
   0b11100000
-  0b10011000
-  0b10000110
-  0b10000001
-  0b10000110
-  0b10011000
+  0b11111000
+  0b11111110
+  0b11111111
+  0b11111110
+  0b11111000
   0b11100000
+
+: player-sprite-p1
+  0b00000000
+  0b01100000
+  0b01111000
+  0b01111110
+  0b01111000
+  0b01100000
+  0b00000000
+
+: player-sprite-p2
+  0b00000000
+  0b00000000
+  0b01111000
+  0b00000000
+  0b01111000
+  0b00000000
+  0b00000000
+
+: laser-sprite
+  0b00111000
+
+: enemy1-sprite
+  6 # Number of layers
+  4 # Height
+  4 # Mask
+  :pointer enemy1-sprite-m
+  5 # Mask
+  :pointer enemy1-sprite-m
+  6 # Mask
+  :pointer enemy1-sprite-m
+  7 # Mask
+  :pointer enemy1-sprite-m
+  1 # Plane 1
+  :pointer enemy1-sprite-p1
+  2 # Plane 2
+  :pointer enemy1-sprite-p2
+
+: enemy1-sprite-m
+  0b01111110
+  0b11111111
+  0b11111111
+  0b01111110
+
+: enemy1-sprite-p1
+  0b00000000
+  0b01010100
+  0b00000000
+  0b00000000
+
+: enemy1-sprite-p2
+  0b00000000
+  0b00101001
+  0b01111101
+  0b00000000
+
+: enemy2-sprite
+  7 # Number of layers
+  6 # Height
+  4 # Mask
+  :pointer enemy2-sprite-m
+  5 # Mask
+  :pointer enemy2-sprite-m
+  6 # Mask
+  :pointer enemy2-sprite-m
+  7 # Mask
+  :pointer enemy2-sprite-m
+  1 # Plane 1
+  :pointer enemy2-sprite-p1
+  2 # Plane 2
+  :pointer enemy2-sprite-p2
+  3 # Plane 3
+  :pointer enemy2-sprite-p3
+
+: enemy2-sprite-m
+  0b00011000
+  0b00111100
+  0b01111110
+  0b01111110
+  0b00111100
+  0b00011000
+
+: enemy2-sprite-p1
+  0b00011000
+  0b00111100
+  0b01111110
+  0b01111110
+  0b00111100
+  0b00011000
+
+: enemy2-sprite-p2
+  0b00000000
+  0b00000000
+  0b00011000
+  0b00011000
+  0b00000000
+  0b00000000
+
+: enemy2-sprite-p3
+  0b00011000
+  0b00111100
+  0b01100110
+  0b01100110
+  0b00111100
+  0b00011000
+
+: explosion1-sprite
+  7 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer explosion1-sprite-m
+  5 # Mask
+  :pointer explosion1-sprite-m
+  6 # Mask
+  :pointer explosion1-sprite-m
+  7 # Mask
+  :pointer explosion1-sprite-m
+  0 # Plane 1
+  :pointer explosion1-sprite-p1
+  1 # Plane 1
+  :pointer explosion1-sprite-p1
+  2 # Plane 2
+  :pointer explosion1-sprite-m
+
+: explosion1-sprite-m
+  0b00000000
+  0b00111100
+  0b01111110
+  0b00111100
+  0b00000000
+
+: explosion1-sprite-p1
+  0b00000000
+  0b00011000
+  0b00111100
+  0b00011000
+  0b00000000
+
+: explosion2-sprite
+  7 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer explosion2-sprite-m
+  5 # Mask
+  :pointer explosion2-sprite-m
+  6 # Mask
+  :pointer explosion2-sprite-m
+  7 # Mask
+  :pointer explosion2-sprite-m
+  0 # Plane 1
+  :pointer explosion2-sprite-p1
+  1 # Plane 1
+  :pointer explosion2-sprite-p1
+  2 # Plane 2
+  :pointer explosion2-sprite-m
+
+: explosion2-sprite-m
+  0b01111110
+  0b11111111
+  0b11111111
+  0b11111111
+  0b01111110
+
+: explosion2-sprite-p1
+  0b01111110
+  0b11111011
+  0b11011111
+  0b11110111
+  0b01111110
 
 : hud-top-sprite
+  0b01100001
+  0b01100001
+  0b01000001
+  0b01000001
   0b00000001
-  0b01101101
-  0b01001101
-  0b00101001
-  0b01101001
+  0b01000001
+  0b01100001
+  0b01000001
+  0b00100001
   0b00000001
-  0b01101101
-  0b00100101
-  0b01001001
-  0b01001101
+  0b01100001
+  0b01000001
+  0b00100001
+  0b01100001
   0b00000001
-  0b00000001
-  0b00000001
-  0b01101001
-  0b01101101
 
 : hud-bottom-sprite
-  0b01001001
-  0b01000101
   0b00000001
-  0b00101001
-  0b00101001
-  0b00101101
-  0b00100101
+  0b01000001
+  0b01000001
+  0b01000001
+  0b01100001
   0b00000001
   0b00000001
+  0b10100001
+  0b10100001
+  0b01000001
   0b00000001
-  0b00000001
-  0b00000001
-  0b00000001
-  0b00000001
-  0b00000001
+  0b01000001
+  0b01000001
+  0b01000001
+  0b01100001
