@@ -8,8 +8,12 @@
     i := long enemies
     i += vE
     load v0 - v0
-    if v0 == 4 begin
+    if v0 == 5 begin
       generate-enemy
+    end
+    if v0 == 4 begin
+      v0 := 5
+      save v0
     end
     if v0 == 3 begin
       v0 := 4

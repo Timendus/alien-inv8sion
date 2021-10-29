@@ -169,6 +169,7 @@
         if v0 == 2 begin :unpack long enemy2-sprite end
         if v0 == 3 begin :unpack long explosion1-sprite end
         if v0 == 4 begin :unpack long explosion2-sprite end
+        if v0 == 5 begin :unpack long explosion3-sprite end
 
         # And show that cannon fodder!
         display-complex-sprite

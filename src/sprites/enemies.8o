@@ -69,7 +69,7 @@
   0b00000000
 
 : explosion1-sprite
-  7 # Number of layers
+  8 # Number of layers
   5 # Height
   4 # Mask
   :pointer explosion1-sprite-m
@@ -80,11 +80,13 @@
   7 # Mask
   :pointer explosion1-sprite-m
   0 # Plane 1
-  :pointer explosion1-sprite-p1
+  :pointer explosion1-sprite-p01
   1 # Plane 1
-  :pointer explosion1-sprite-p1
+  :pointer explosion1-sprite-p01
   2 # Plane 2
-  :pointer explosion1-sprite-m
+  :pointer explosion1-sprite-p2
+  3 # Plane 3
+  :pointer explosion1-sprite-p3
 
 : explosion1-sprite-m
   0b00000000
@@ -93,15 +95,29 @@
   0b00111100
   0b00000000
 
-: explosion1-sprite-p1
+: explosion1-sprite-p01
+  0b00000000
+  0b00111100
+  0b01000010
+  0b00111100
+  0b00000000
+
+: explosion1-sprite-p2
+  0b00000000
+  0b00111100
+  0b01100110
+  0b00111100
+  0b00000000
+
+: explosion1-sprite-p3
+  0b00000000
   0b00000000
   0b00011000
-  0b00111100
-  0b00011000
+  0b00000000
   0b00000000
 
 : explosion2-sprite
-  7 # Number of layers
+  8 # Number of layers
   5 # Height
   4 # Mask
   :pointer explosion2-sprite-m
@@ -112,22 +128,90 @@
   7 # Mask
   :pointer explosion2-sprite-m
   0 # Plane 1
-  :pointer explosion2-sprite-p1
+  :pointer explosion2-sprite-p01
   1 # Plane 1
-  :pointer explosion2-sprite-p1
+  :pointer explosion2-sprite-p01
   2 # Plane 2
-  :pointer explosion2-sprite-m
+  :pointer explosion2-sprite-p2
+  3 # Plane 3
+  :pointer explosion2-sprite-p3
 
 : explosion2-sprite-m
+  0b00111100
+  0b01111110
+  0b01111110
+  0b01111110
+  0b00111100
+
+: explosion2-sprite-p01
+  0b00111100
+  0b01000010
+  0b01000010
+  0b01000010
+  0b00111100
+
+: explosion2-sprite-p2
+  0b00111100
+  0b01111110
+  0b01100110
+  0b01111110
+  0b00111100
+
+: explosion2-sprite-p3
+  0b00000000
+  0b00000000
+  0b00011000
+  0b00000000
+  0b00000000
+
+: explosion3-sprite
+  8 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer explosion3-sprite-m
+  5 # Mask
+  :pointer explosion3-sprite-m
+  6 # Mask
+  :pointer explosion3-sprite-m
+  7 # Mask
+  :pointer explosion3-sprite-m
+  0 # Plane 0
+  :pointer explosion3-sprite-p01
+  1 # Plane 1
+  :pointer explosion3-sprite-p01
+  2 # Plane 2
+  :pointer explosion3-sprite-p2
+  3 # Plane 3
+  :pointer explosion3-sprite-p3
+
+# Yellow  1110
+# Red     0010
+# Brown   0001
+
+: explosion3-sprite-m
   0b01111110
   0b11111111
   0b11111111
   0b11111111
   0b01111110
 
-: explosion2-sprite-p1
+: explosion3-sprite-p01
   0b01111110
-  0b11111011
-  0b11011111
-  0b11110111
+  0b10000001
+  0b11000011
+  0b10000001
   0b01111110
+
+: explosion3-sprite-p2
+  0b01111110
+  0b11100111
+  0b11011011
+  0b11100111
+  0b01111110
+
+: explosion3-sprite-p3
+  0b00000000
+  0b00011000
+  0b00100100
+  0b00011000
+  0b00000000

@@ -67,6 +67,9 @@
             v0 += 1
             save v0
           end
+          # Make a beep
+          v0 := 1
+          buzzer := v0
         end
       end
     end
