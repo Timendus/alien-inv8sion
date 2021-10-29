@@ -80,5 +80,15 @@ shooting back or colliding in to you. I think I have to sleep on this 😄
 * [ ] Make collisions with enemies hurt?
 * [x] Keep score of health and points
 * [x] Something resembling levels?
-* [ ] More pretty background pixel art
+* [x] More pretty background pixel art
 * [ ] Add a big bomb that you can trigger once in a while
+* [ ] Lasers or bombs use up energy to shoot?
+* [ ] Fix exploding aliens
+  * Move exploding aliens up a pixel
+  * Don't blow up blown up aliens
+
+## Name ideas
+
+* Alien8ed
+* Alien invasion
+* Alien inv8sion
