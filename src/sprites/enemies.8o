@@ -35,8 +35,8 @@
   0b00000000
 
 : enemy2-sprite
-  7 # Number of layers
-  6 # Height
+  6 # Number of layers
+  4 # Height
   4 # Mask
   :pointer enemy2-sprite-m
   5 # Mask
@@ -45,44 +45,28 @@
   :pointer enemy2-sprite-m
   7 # Mask
   :pointer enemy2-sprite-m
+  0 # Plane 0
+  :pointer enemy2-sprite-p0
   1 # Plane 1
   :pointer enemy2-sprite-p1
-  2 # Plane 2
-  :pointer enemy2-sprite-p2
-  3 # Plane 3
-  :pointer enemy2-sprite-p3
 
 : enemy2-sprite-m
   0b00011000
-  0b00111100
   0b01111110
+  0b11111111
   0b01111110
-  0b00111100
+
+: enemy2-sprite-p0
+  0b00000000
   0b00011000
+  0b01010100
+  0b00000000
 
 : enemy2-sprite-p1
-  0b00011000
-  0b00111100
-  0b01111110
-  0b01111110
-  0b00111100
-  0b00011000
-
-: enemy2-sprite-p2
-  0b00000000
   0b00000000
   0b00011000
-  0b00011000
+  0b00101010
   0b00000000
-  0b00000000
-
-: enemy2-sprite-p3
-  0b00011000
-  0b00111100
-  0b01100110
-  0b01100110
-  0b00111100
-  0b00011000
 
 : explosion1-sprite
   7 # Number of layers
