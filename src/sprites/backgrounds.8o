@@ -1,25 +1,157 @@
 #data
 
+# Colours used:
+# Light green   1101
+# Dark green    1001
+# Brown         0001
+# Light gray    0100
+
 : background1-sprite
-  0b00001000
-  0b00100001
-  0b00000100
-  0b10000000
-  0b00010010
-  0b01000000
-  0b00000100
-  0b10010000
+  2 # Number of layers
+  8 # Height
+  0 # Plane 0
+  :pointer background1-sprite-p0
+  1 # Plane 1
+  :pointer background1-sprite-p1
+
+: background1-sprite-p0
+  0b11111111
+  0b11110011
+  0b11100001
+  0b11111111
+  0b10011111
+  0b00001111
+  0b11111111
+  0b11111111
+
+: background1-sprite-p1
+  0b00000000
+  0b00001100
+  0b00011110
+  0b00000000
+  0b01100000
+  0b11110000
+  0b00000000
+  0b00000000
 
 : background2-sprite
+  2 # Number of layers
+  7 # Height
+  0 # Plane 0
+  :pointer background2-sprite-p0
+  1 # Plane 1
+  :pointer background2-sprite-p1
+
+: background2-sprite-p0
+  0b11101111
+  0b11001111
+  0b00000111
+  0b00010010
+  0b00001000
+  0b00000000
+  0b00000000
+
+: background2-sprite-p1
   0b00010000
   0b00111000
   0b11111100
   0b11111111
   0b11111111
+  0b11111111
+  0b11111111
 
 : background3-sprite
-  0b11100111
-  0b11000011
-  0b10000001
+  3 # Number of layers
+  5 # Height
+  4 # Mask
+  :pointer background3-sprite-m
+  5 # Mask
+  :pointer background3-sprite-m
+  3 # Plane 3
+  :pointer background3-sprite-1
+
+: background3-sprite-m
+  0b00010000
+  0b00111100
+  0b01111110
+  0b11111111
+  0b11111111
+
+: background3-sprite-1
+  0b00000000
+  0b00110000
+  0b01111100
+  0b11011110
+  0b10111111
+
+: background4-sprite
+  4 # Number of layers
+  8 # Height
+  0 # Plane 0
+  :pointer background4-sprite-p0
+  1 # Plane 1
+  :pointer background4-sprite-p12
+  2 # Plane 2
+  :pointer background4-sprite-p12
+  3 # Plane 3
+  :pointer background4-sprite-p3
+
+: background4-sprite-p0
+  0b00011000
+  0b00111100
+  0b01110110
+  0b11111011
+  0b11011111
+  0b11111111
+  0b11111111
+  0b11111111
+
+: background4-sprite-p12
+  0b00010000
+  0b00100000
+  0b01000000
+  0b10000000
   0b00000000
   0b00000000
+  0b00000000
+  0b00000000
+
+: background4-sprite-p3
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+
+: background5-sprite
+  3 # Number of layers
+  8 # Height
+  0 # Plane 0
+  :pointer background5-sprite-p01
+  1 # Plane 1
+  :pointer background5-sprite-p01
+  3 # Plane 3
+  :pointer background5-sprite-p3
+
+: background5-sprite-p01
+  0b00000000
+  0b00011100
+  0b01111110
+  0b11111111
+  0b11111111
+  0b11111111
+  0b11111111
+  0b00000000
+
+: background5-sprite-p3
+  0b00000000
+  0b00011000
+  0b01111100
+  0b11011110
+  0b11111011
+  0b10111111
+  0b11111111
+  0b11111111

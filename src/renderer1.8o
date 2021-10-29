@@ -16,53 +16,66 @@
   i := long tick
   load vE - vE
 
-  vE >>= vE
+  vD := vE
+  vD >>= vD
+  vD >>= vD
+  vD >>= vD
   v0 := 7
-  v0 &= vE
+  v0 &= vD
   v2 := 7
   v2 -= v0 # X
-  v3 := 19 # Y
-  #:breakpoint stop
+  v3 := 8 # Y
   loop
     :unpack long background2-sprite
-    v4 := 5 # height
-    v5 := 3 # plane
-    display-sprite
+    display-complex-sprite
     v2 += 8
     if v2 < 64 then
   again
 
-  vE >>= vE
+  vD := vE
+  vD >>= vD
+  vD >>= vD
   v0 := 7
-  v0 &= vE
+  v0 &= vD
   v2 := 7
   v2 -= v0 # X
-  v3 := 14 # Y
-  #:breakpoint stop
+  v3 := 12 # Y
   loop
     :unpack long background3-sprite
-    v4 := 5 # height
-    v5 := 3 # plane
-    display-sprite
+    display-complex-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  vD := vE
+  vD >>= vD
+  v0 := 7
+  v0 &= vD
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 17 # Y
+  loop
+    :unpack long background4-sprite
+    display-complex-sprite
+    v2 += 8
+    if v2 < 64 then
+  again
+
+  v0 := 7
+  v0 &= vE
+  v2 := 7
+  v2 -= v0 # X
+  v3 := 22 # Y
+  loop
+    :unpack long background5-sprite
+    display-complex-sprite
     v2 += 8
     if v2 < 64 then
   again
 
   vE >>= vE
-  v0 := 7
-  v0 &= vE
-  v2 := 7
-  v2 -= v0 # X
-  v3 := 9 # Y
-  loop
-    :unpack long background2-sprite
-    v4 := 5 # height
-    v5 := 3 # plane
-    display-sprite
-    v2 += 8
-    if v2 < 64 then
-  again
-
+  vE >>= vE
+  vE >>= vE
   vE >>= vE
   v0 := 7
   v0 &= vE
@@ -71,15 +84,7 @@
   v3 := 0 # Y
   loop
     :unpack long background1-sprite
-    v4 := 8 # height
-    v5 := 0 # plane
-    display-sprite
-    :unpack long background1-sprite
-    v5 := 1 # plane
-    display-sprite
-    :unpack long background1-sprite
-    v5 := 2 # plane
-    display-sprite
+    display-complex-sprite
     v2 += 8
     if v2 < 64 then
   again
