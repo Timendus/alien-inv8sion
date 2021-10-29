@@ -110,14 +110,12 @@
   v0 &= v1
   v2 += v0
   v3 += 1 # Y
-  v4 := 1 # height
-  v5 := 2 # plane
   loop
     :unpack long laser-sprite
-    display-sprite
+    display-complex-sprite
     v3 += 4
     :unpack long laser-sprite
-    display-sprite
+    display-complex-sprite
     v3 -= 4
     v2 += 6
     if v2 < 60 then

@@ -44,4 +44,16 @@
   0b00000000
 
 : laser-sprite
+  4 # Number of layers
+  1 # Height
+  4 # Mask
+  :pointer laser-sprite-m
+  5 # Mask
+  :pointer laser-sprite-m
+  7 # Mask
+  :pointer laser-sprite-m
+  2 # Plane 2
+  :pointer laser-sprite-m
+
+: laser-sprite-m
   0b00111000
