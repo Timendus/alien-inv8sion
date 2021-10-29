@@ -72,20 +72,26 @@ But it can be a competition with friends to see who gets the furthest, I guess.
 Also, I feel like there should be some danger involved, like the enemies
 shooting back or colliding in to you. I think I have to sleep on this 😄
 
+### Day four: Pixel art
+
+Still not entirely sure how I'm going to fix the gameplay, I spent an evening on
+doing pixel art. The parallax background was really crude the first time around,
+so I gave it a do-over. Same with the explosion animation and the alien UFO
+ship. Looking a bit less bad this time 😜
+
 ## TODO LIST
 
-* [x] Add moving enemies
-* [x] Allow shooting enemies
-* [ ] Make enemies shoot you?
-* [ ] Make collisions with enemies hurt?
-* [x] Keep score of health and points
-* [x] Something resembling levels?
-* [x] More pretty background pixel art
-* [ ] Add a big bomb that you can trigger once in a while
-* [ ] Lasers or bombs use up energy to shoot?
+* [ ] Make shooting aliens more accurate (bounding box)
 * [ ] Fix exploding aliens
   * Move exploding aliens up a pixel
   * Don't blow up blown up aliens
+* [ ] Make the game more dangerous
+  * Make enemies shoot you?
+  * Make collisions with enemies hurt?
+  * Give player health?
+* [ ] Work on the weapon system
+  * Add a big bomb that you can trigger once in a while?
+  * Lasers or bombs use up energy to shoot?
 
 ## Name ideas
 
