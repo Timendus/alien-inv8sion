@@ -1,5 +1,7 @@
 # Alien inv8sion
 
+__Work in progress! 😉__
+
 A fun project for [Octojam 8](https://itch.io/jam/octojam-8). Challenge: write a
 game for the illustrious Chip-8 platform in the month of October.
 
@@ -34,8 +36,8 @@ systems, or even systems like the NES from 1985.
 Unfortunately I didn't have very much time to work on this game this year, and
 the actual gameplay isn't what you may expect from an arcade or NES game. But
 it's fun to play around with, and as a demo of what CHIP-8 can do if pushed: a
-fully animated colourful background and lots of masked sprites flying across the
-screen!
+fully animated colourful parallax background with lots of masked sprites flying
+across the screen!
 
 ## Development notes
 
@@ -129,9 +131,3 @@ ship. Looking a bit less bad this time 😜
 * [ ] Work on the weapon system
   * Add a big bomb that you can trigger once in a while?
   * Lasers or bombs use up energy to shoot?
-
-## Name ideas
-
-* Alien8ed
-* Alien invasion
-* Alien inv8sion
