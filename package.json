@@ -4,7 +4,7 @@
     "build": "octopus src/index.8o bin/octojam8.8o && octopus src/index.8o bin/octojam8-octo.8o OCTO && cat bin/octojam8-octo.8o | pbcopy",
     "build-all": "npm run build && npm run build-binary && npm run build-html",
     "build-binary": "npm run build && octo bin/octojam8.8o bin/octojam8.ch8 && octo bin/octojam8-octo.8o bin/octojam8-octo.ch8",
-    "build-html": "npm run build && octo --options octo-config.json bin/octojam8-octo.8o docs/index.html"
+    "build-html": "npm run build && octo --options octo-config.json bin/octojam8-octo.8o docs/octo/index.html"
   },
   "dependencies": {
     "chipcode": "../chipcode",

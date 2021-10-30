@@ -1,5 +1,5 @@
 {
-	"tickrate": 50000,
+	"tickrate": 200000,
 	"fillColor": "#FFCC00",
 	"fillColor2": "#FF6600",
 	"blendColor": "#662200",

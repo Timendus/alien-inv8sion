@@ -1,0 +1,111 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  background-image: url('tv.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  perspective: 700px;
+}
+
+canvas {
+  position: absolute;
+  top: 50%;
+  left: 35.5vw;
+  margin-top: -9.5vw;
+  width: 34vw;
+  transform: rotateY(-5deg) rotateZ(2deg);
+
+  /* cursor: pointer; */
+  background-color: #000;
+
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: blur(0.05vw) sepia(0.3) brightness(0.9);
+}
+canvas.dragging {
+  filter: blur(0.05vw) sepia(0.3) brightness(0.9) drop-shadow(0px 0px 4vw #FF6633);
+  border-radius: 1vw;
+}
+
+.keyboard {
+  display: none;
+  position: fixed;
+  top: 50%;
+  margin-top: -30vh;
+  font-size: 0;
+  width: 30vh;
+  height: 60vh;
+}
+.keyboard button {
+  font-size: 3vw;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 50%;
+  height: 25%;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+
+  /* Prevent mobile browser from selecting text on button */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+
+  /* Prevent mobile browser from adding 300ms delay to touch events */
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+.keyboard button:active {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.left-keyboard {
+  left: 1vw;
+}
+.right-keyboard {
+  right: 1vw;
+}
+
+@media screen and (max-aspect-ratio: 1/1) {
+  canvas {
+    left: calc(50% - 14.5vh);
+    width: 34vh;
+    margin-top: -9.5vh;
+    filter: blur(0.05vw) sepia(0.3) brightness(0.9);
+  }
+
+  .keyboard {
+    margin-top: auto;
+    top: auto;
+    bottom: 1vh;
+    width: 15vh;
+    height: 30vh;
+  }
+  .keyboard button {
+    font-size: 3vh;
+  }
+  .left-keyboard {
+    left: auto;
+    right: 50%;
+  }
+  .right-keyboard {
+    right: auto;
+    left: 50%;
+  }
+}
+
+/* Only show buttons on touch devices */
+@media (hover: none) {
+  .keyboard {
+    display: block;
+  }
+}

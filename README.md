@@ -1,4 +1,41 @@
-# Untitled space shooter
+# Alien inv8sion
+
+A fun project for [Octojam 8](https://itch.io/jam/octojam-8). Challenge: write a
+game for the illustrious Chip-8 platform in the month of October.
+
+To play:
+
+  * [Start the game in your browser!](https://timendus.github.io/alien-inv8sion/silicon8) (full colours)
+  * [Run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
+
+Controls:
+  * Arrow keys or WASD to control your ship (or keys 5, 7, 8 and 9 on mobile / Cosmac VIP)
+  * E or spacebar to fire lasers (or key 6 on mobile / Cosmac VIP)
+
+(If you like this, you may also like my submission from last year, [3D Viper
+Maze](https://github.com/Timendus/3d-viper-maze))
+
+## The concept
+
+Alien inv8sion is a nod to the endless stream of space shooters that popped up
+in the late 70s and early 80s after the popularity of the game Space Invaders
+from 1978. This is very much the exact same period in which CHIP-8 became
+popular, and there are a lot of Space Invaders clones and other space shooters
+for CHIP-8. Time to add my twist on the theme to the fray!
+
+Having recently developed a WebAssembly CHIP-8, SCHIP and XO-CHIP interpreter
+called [Silicon8](https://github.com/Timendus/silicon8) that supports the full
+range of XO-CHIPs potential colour space (a whole whopping 16 colours!) I
+figured it would be a shame not to make use of those colours in my next game. So
+I did, and I bumped the virtual CPU speed to something absolutely insane to
+bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted arcade
+systems, or even systems like the NES from 1985.
+
+Unfortunately I didn't have very much time to work on this game this year, and
+the actual gameplay isn't what you may expect from an arcade or NES game. But
+it's fun to play around with, and as a demo of what CHIP-8 can do if pushed: a
+fully animated colourful background and lots of masked sprites flying across the
+screen!
 
 ## Development notes
 
@@ -74,7 +111,7 @@ shooting back or colliding in to you. I think I have to sleep on this 😄
 
 ### Day four: Pixel art
 
-Still not entirely sure how I'm going to fix the gameplay, I spent an evening on
+Still not entirely sure how I was going to fix the gameplay, I spent an evening
 doing pixel art. The parallax background was really crude the first time around,
 so I gave it a do-over. Same with the explosion animation and the alien UFO
 ship. Looking a bit less bad this time 😜
