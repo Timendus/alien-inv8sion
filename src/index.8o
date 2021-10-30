@@ -50,40 +50,45 @@
     i := long enemies
     i += vE
     load v0 - v3
-    if v0 != 0 begin # Don't blow up dead aliens TODO: don't blow up exploding aliens
-      v2 >>= v2
-      v2 >>= v2
-      if v2 > vC begin # Enemy is in front of player
-        v3 >>= v3
-        v3 >>= v3
-        if v3 == vD begin # Enemy is on same height as player
-          # Hit! Set enemy to explosion
-          v0 := 3
-          save v0
-          # Increast score
-          i := long score
+    # Don't blow up dead aliens
+    if v0 == 0 then jump check-shots-next-alien
+    if v0 > 2 then jump check-shots-next-alien
+    # Check if we hit this alien
+    v2 >>= v2
+    v2 >>= v2
+    if v2 > vC begin # Enemy is in front of player
+      v3 >>= v3
+      v3 >>= v3
+      v3 -= vD
+      v3 += 2
+      if v3 < 8 begin # Enemy is on same height as player
+        # Hit! Set enemy to explosion
+        v0 := 3
+        save v0
+        # Increast score
+        i := long score
+        load v0 - v0
+        v0 += 1
+        save v0
+        # Next level if score overflows
+        if v0 == 0 begin
+          i := long level
           load v0 - v0
           v0 += 1
           save v0
-          # Next level if score overflows
-          if v0 == 0 begin
-            i := long level
-            load v0 - v0
-            v0 += 1
-            save v0
-            v0 := 1
-            i := long level-screen
-            save v0
-            i := long tick
-            save v0
-            hide-enemies
-          end
-          # Make a beep
           v0 := 1
-          buzzer := v0
+          i := long level-screen
+          save v0
+          i := long tick
+          save v0
+          hide-enemies
         end
+        # Make a beep
+        v0 := 1
+        buzzer := v0
       end
     end
+    : check-shots-next-alien
     vE += 5
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
