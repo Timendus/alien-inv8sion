@@ -9,6 +9,9 @@
   render-hud
   render-score
   render-level
+  i := long level-screen
+  load v0
+  if v0 == 1 then render-level-text
   display-copy
   return
 

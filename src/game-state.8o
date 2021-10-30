@@ -12,6 +12,8 @@
   0
 : score
   0
+: level-screen
+  1
 
 :monitor player 2
 :monitor shooting 1

@@ -1,0 +1,122 @@
+# Input: v0 = level number
+: render-level-text
+  create-empty-space
+  render-level-number
+  render-ready-string
+  render-level-string
+  return
+
+: create-empty-space
+  i := long display-buffer-plane1
+  clear-row
+  i := long display-buffer-plane2
+  clear-row
+  i := long display-buffer-plane3
+  clear-row
+  i := long display-buffer-plane4
+  clear-row
+  return
+
+: clear-row
+  v0 := 0
+  v1 := 0
+  v2 := 0
+  v3 := 0
+  v4 := 0
+  v5 := 0
+  v6 := 0
+
+  v7 := 0
+  v8 := 24
+  v9 := 9 # Top of black bar
+  vA := 6
+  i += v9
+  loop
+    save v0 - v6
+    i += vA
+    save v0 - v6
+    i += v8
+    v7 += 1
+    if v7 != 8 then
+  again
+  return
+
+: render-level-number
+  v4 := 1
+  v4 += 17
+  load-font
+  v2 := 42
+  v3 := 10 # Top of line one
+  v4 := 5 # Height
+  v5 := 2 # Plane
+  display-sprite
+  return
+
+: render-level-string
+  vB := 0
+  v2 := 21
+  v3 := 10 # Top of line one
+  loop
+    if vB == 5 then return
+    i := level-string
+    i += vB
+    load v4 - v4
+    load-font
+    load vA - vA
+    v4 := 5 # Height
+    v5 := 2 # Plane
+    display-sprite
+    v2 += vA
+    vB += 1
+  again
+
+: render-ready-string
+  vB := 0
+  v2 := 11
+  v3 := 16 # Top of line two
+  loop
+    if vB == 10 then return
+    i := get-ready-string
+    i += vB
+    load v4 - v4
+    load-font
+    load vA - vA
+    v4 := 5 # Height
+    v5 := 2 # Plane
+    display-sprite
+    v2 += vA
+    vB += 1
+  again
+
+# Get font address in both i and v0, v1
+# Input: v4 = ascii value
+: load-font
+  i := long font
+  :unpack long font
+  v4 <<= v4
+  v1 += v4
+  v0 += vF
+  v1 += v4
+  v0 += vF
+  v1 += v4
+  v0 += vF
+  v1 += 1
+  v0 += vF
+  i += v4
+  i += v4
+  i += v4
+  return
+
+#data
+
+:stringmode ascii "\0 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" {
+  :byte { VALUE }
+}
+
+: level-string
+  ascii "Level"
+
+: get-ready-string
+  ascii "GET READY!"
+
+#include "sprites/font.8o"

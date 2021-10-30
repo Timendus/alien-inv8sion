@@ -2,7 +2,6 @@
 
 : main
   lores
-  generate-enemies
 
 : main-redraw
   v0 := 1
@@ -26,6 +25,10 @@
   save v0
   vF := 0b00111111
   v0 &= vF
+  if v0 == 0 begin
+    i := long level-screen
+    save v0
+  end
   if v0 == 0 then revive-enemies
   return
 
@@ -81,3 +84,4 @@
 #include "renderer1.8o"
 #include "game-state.8o"
 #include "key-input.8o"
+#include "text.8o"
