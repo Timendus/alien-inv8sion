@@ -2,6 +2,8 @@
 
 : main
   lores
+  render-title
+  v0 := key
 
 : main-redraw
   v0 := 1
@@ -85,3 +87,4 @@
 #include "game-state.8o"
 #include "key-input.8o"
 #include "text.8o"
+#include "title.8o"
