@@ -44,9 +44,21 @@
 : render-level-number
   i := long level
   load v4 - v4
+  i := numbers-bcd
+  bcd v4
+  load vA - vC
+  v4 := vB
   v4 += 17
   load-font
-  v2 := 42
+  v2 := 40
+  v3 := 10 # Top of line one
+  v4 := 5 # Height
+  v5 := 2 # Plane
+  display-sprite
+  v4 := vC
+  v4 += 17
+  load-font
+  v2 := 44
   v3 := 10 # Top of line one
   v4 := 5 # Height
   v5 := 2 # Plane
@@ -55,7 +67,7 @@
 
 : render-level-string
   vB := 0
-  v2 := 21
+  v2 := 19
   v3 := 10 # Top of line one
   loop
     if vB == 5 then return
