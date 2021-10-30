@@ -7,8 +7,9 @@ game for the illustrious Chip-8 platform in the month of October.
 
 To play:
 
+  * Open this in a new tab: [Suggested soundtrack](https://www.youtube.com/watch?v=Pz1a9MM-Vn4&ab_channel=ThePrimeThanatos) 🎶😄
   * [Start the game in your browser!](https://timendus.github.io/alien-inv8sion/silicon8) (full colours)
-  * [Run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
+  * Or: [run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
 
 Controls:
   * Arrow keys or WASD to control your ship (or keys 5, 7, 8 and 9 on mobile / Cosmac VIP)
@@ -27,17 +28,24 @@ for CHIP-8. Time to add my twist on the theme to the fray!
 
 Having recently developed a WebAssembly CHIP-8, SCHIP and XO-CHIP interpreter
 called [Silicon8](https://github.com/Timendus/silicon8) that supports the full
-range of XO-CHIPs potential colour space (a whole whopping 16 colours!) I
-figured it would be a shame not to make use of those colours in my next game. So
-I did, and I bumped the virtual CPU speed to something absolutely insane to
-bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted arcade
-systems, or even systems like the NES from 1985.
+range of XO-CHIPs potential colour space [[1]](#notes) (a whole whopping 16
+colours!) I figured it would be a shame not to make use of those colours in my
+next game. So I did, and I bumped the virtual CPU speed to something absolutely
+insane to bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted
+arcade systems, or even systems like the NES from 1985.
 
 Unfortunately I didn't have very much time to work on this game this year, and
 the actual gameplay isn't what you may expect from an arcade or NES game. But
 it's fun to play around with, and as a demo of what CHIP-8 can do if pushed: a
 fully animated colourful parallax background with lots of masked sprites flying
 across the screen!
+
+### Notes
+
+[1] See the [XO-CHIP
+specification](https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md#bitplanes),
+specifically the last lines about bitplanes. I think Silicon8 is probably the
+first interpreter to actually implement this "hidden feature"?
 
 ## Development notes
 
