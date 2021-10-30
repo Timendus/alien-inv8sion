@@ -71,6 +71,12 @@
             load v0 - v0
             v0 += 1
             save v0
+            v0 := 1
+            i := long level-screen
+            save v0
+            i := long tick
+            save v0
+            hide-enemies
           end
           # Make a beep
           v0 := 1

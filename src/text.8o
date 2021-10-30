@@ -42,7 +42,8 @@
   return
 
 : render-level-number
-  v4 := 1
+  i := long level
+  load v4 - v4
   v4 += 17
   load-font
   v2 := 42

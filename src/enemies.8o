@@ -42,6 +42,18 @@
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
 
+: hide-enemies
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    v0 := 0
+    save v0
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+  return
+
 # Generate a new wave of enemies
 : generate-enemies
   # Pre-load current level for generate-enemy
