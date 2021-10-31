@@ -5,8 +5,6 @@
   0 # Boolean
 : level-screen
   1 # Boolean
-: game-over
-  0 # Boolean
 
 : tick
   0
@@ -17,6 +15,8 @@
 : score
   0
 : hits
+  0
+: game-over
   0
 
 :monitor player 2

@@ -15,7 +15,7 @@
   if v0 == 1 then render-level-text
   i := long game-over
   load v0
-  if v0 == 1 then render-game-over-text
+  if v0 == 4 then render-game-over-text
   display-copy
   return
 
@@ -99,10 +99,28 @@
   return
 
 : render-player
+  :unpack long player-sprite
+  i := long game-over
+  load v2 - v2
+  if v2 == 1 begin
+    :unpack long explosion1-sprite
+  end
+  if v2 == 2 begin
+    :unpack long explosion2-sprite
+  end
+  if v2 == 3 begin
+    :unpack long explosion3-sprite
+  end
+  if v2 == 4 begin
+    :unpack long explosion3-sprite
+  end
   i := player
   load v2 - v3 # X and Y
-  :unpack long player-sprite
   display-complex-sprite
+
+  i := long game-over
+  load v0
+  if v0 != 0 then return
 
   # Show shield?
   i := hits

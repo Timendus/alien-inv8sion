@@ -25,10 +25,13 @@
 
 # Revive enemies that have been disabled
 : revive-enemies
-  # Don't revive enemies while on "Get ready" level screen
+  # Don't revive enemies while on "Get ready" or "Game over" screen
   i := long level-screen
   load v0
   if v0 == 1 then return
+  i := long game-over
+  load v0
+  if v0 == 3 then return
   # Pre-load current level for generate-enemy
   i := long level
   load vC - vC

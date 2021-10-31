@@ -14,20 +14,27 @@
   v0 := key
 
 : main-redraw
+  # Sync to clock
   v0 := 1
   delay := v0
   loop
     v0 := delay
     if v0 != 0 then
   again
-  i := long game-over
-  load v0
-  if v0 == 2 then jump reset
 
   clock-tick
-  check-keys
-  check-shots
-  check-collisions
+
+  # Game over check
+  i := long game-over
+  load v0
+  if v0 == 5 then jump reset
+  if v0 == 0 begin
+    # Skip these things if we're game over
+    check-keys
+    check-shots
+    check-collisions
+  end
+
   render-scene
   explode-enemies
   jump main-redraw
@@ -38,27 +45,42 @@
   v0 += 1
   save v0
 
-  # Hide level overlay after a while
-  vF := 0b01111111
-  v0 &= vF
+  # Game over animation
+  i := long game-over
+  load v1 - v1
   if v0 == 0 begin
+    if v1 == 4 then v1 := 5
+  end
+  v2 := 0b00011111
+  v2 &= v0
+  if v2 == 0 begin
+    if v1 == 3 then v1 := 4
+  end
+  v2 := 0b00001111
+  v2 &= v0
+  if v2 == 0 begin
+    if v1 == 2 then v1 := 3
+    if v1 == 1 then v1 := 2
+  end
+  save v1 - v1
+
+  # Hide level overlay after a while
+  v2 := 0b01111111
+  v2 &= v0
+  if v2 == 0 begin
     i := long level-screen
-    save v0
-    i := long game-over
-    load v0 - v0
-    if v0 == 1 then v0 := 2
     save v0
   end
 
   # Revive all enemies once in a while
-  vF := 0b00111111
-  v0 &= vF
-  if v0 == 0 then revive-enemies
+  v2 := 0b00111111
+  v2 &= v0
+  if v2 == 0 then revive-enemies
 
   # Regain power over time
-  vF := 0b00000001
-  v0 &= vF
-  if v0 == 0 begin
+  v2 := 0b00000001
+  v2 &= v0
+  if v2 == 0 begin
     i := long hits
     load v0 - v0
     if v0 != 0 then v0 -= 1
@@ -170,6 +192,9 @@
           save v0
           i := long tick
           save v0
+          v0 := 0
+          i := long shooting
+          save v0
         else
           v0 += 10
           save v0
@@ -186,6 +211,18 @@
   load v9
   i := long player
   save v9
+
+  # Reset enemies
+  i := long reset-enemies
+  load v4
+  vE := 0
+  i := long enemies
+  loop
+    save v4
+    vE += 1
+    if vE != NUM_ENEMIES then # Checked all NUM_ENEMIES enemies?
+  again
+
   jump restart
 
 #data
@@ -194,12 +231,14 @@
   10 10 # Player X, Y
   0 # Shooting boolean
   1 # Level screen boolean
-  0 # Game-over boolean
   0 # tick
   0 # wave
   1 # level
   0 # score
   0 # hits
+  0 # Game-over state
+: reset-enemies
+  0 0 0 0 0
 
 #include "enemies.8o"
 #include "renderer1.8o"
