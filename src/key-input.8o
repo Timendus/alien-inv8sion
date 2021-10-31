@@ -1,6 +1,6 @@
 #####################
 # Non-blocking key input check
-# Updates the player data on input, checks for collisions
+# Updates the player data on key input
 # Destroys v0 - v3
 : check-keys
   i := long player
@@ -32,15 +32,3 @@
 
   save v0 - v2
   return
-
-# Blocking "press any key" routine
-# (does play music though)
-# Returns pressed key in v5
-: wait-key-press
-  vA := 0
-: wait-key-press-loop
-  #clock-tick
-  if vA key then return
-  vA += 1
-  if vA != 16 then jump wait-key-press-loop
-  jump wait-key-press

@@ -52,7 +52,6 @@
     vE += 5
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
-  return
 
 # Generate a new wave of enemies
 : generate-enemies
