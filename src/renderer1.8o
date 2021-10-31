@@ -189,8 +189,8 @@
         generate-enemy
         i := long score
         load v0 - v0
-        if v0 > 9 begin
-          v0 -= 10
+        if v0 > 4 begin
+          v0 -= 5
         else
           v0 := 0
         end

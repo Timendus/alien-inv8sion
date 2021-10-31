@@ -72,7 +72,10 @@
 : generate-enemy
   # v0 / Type: 0, 1 or 2 (0 most likely)
   v0 := random 3
-  if v0 == 3 then v0 := 0
+  if vC == 1 then v0 := random 31
+  if vC == 2 then v0 := random 15
+  if vC == 3 then v0 := random 7
+  if v0 > 2 then v0 := 0
   # v1 / Vx: Negative number from -1 to -3
   v2 := random 7
   v2 >>= v2

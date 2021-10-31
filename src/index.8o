@@ -131,21 +131,33 @@
         v0 := 3
         save v0
         # Increast score
+        i := long level
+        load v1 - v1
         i := long score
         load v0 - v0
         v0 += 1
-        save v0
-        # Next level if score overflows
-        if v0 == 0 begin
+        if v1 < 4 then v0 += 1
+        if v1 < 3 then v0 += 1
+        if v1 < 2 then v0 += 1
+        save v0 - v0
+        # Next level if score reaches 250
+        if v0 > 249 begin
+          # Reset score to 0
+          v0 := 0
+          save v0
+          # Reset tick so timing of overlay makes sense
+          i := long tick
+          save v0
+          # Increase level
           i := long level
           load v0 - v0
           v0 += 1
           save v0
+          # Show level overlay
           v0 := 1
           i := long level-screen
           save v0
-          i := long tick
-          save v0
+          # Enemies back to start
           hide-enemies
         end
         # Make a beep
