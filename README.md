@@ -7,7 +7,7 @@ game for the illustrious Chip-8 platform in the month of October.
 
 To play:
 
-  * The game on Itch.io (pending)
+  * [The game on Itch.io](https://timendus.itch.io/alien-inv8sion)
   * [Just the game, running in your browser!](https://timendus.github.io/alien-inv8sion/silicon8)
 
 Bonus content:
