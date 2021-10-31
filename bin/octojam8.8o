@@ -53,41 +53,47 @@
   v0 += 1
   save v0
 
+  # This is one of those last-minute bugs that I don't feel like solving ;)
+  # If I load, increase and save vA, weird things happen. If I do the same with
+  # v0 and then move the value to vA (because that keeps it safe when we call
+  # revive-enemies) then there's no problem. Mind. Blown. 🤯
+  vA := v0
+
   # Game over animation
   i := long game-over
   load v1 - v1
-  if v0 == 0 begin
+  if vA == 0 begin
     if v1 == 4 then v1 := 5
   end
   v2 := 0b00011111
-  v2 &= v0
+  v2 &= vA
   if v2 == 0 begin
     if v1 == 3 then v1 := 4
   end
   v2 := 0b00001111
-  v2 &= v0
+  v2 &= vA
   if v2 == 0 begin
     if v1 == 2 then v1 := 3
     if v1 == 1 then v1 := 2
   end
   save v1 - v1
 
-  # Hide level overlay after a while
-  v2 := 0b01111111
-  v2 &= v0
-  if v2 == 0 begin
-    i := long level-screen
-    save v0
-  end
-
   # Revive all enemies once in a while
   v2 := 0b00111111
-  v2 &= v0
+  v2 &= vA
   if v2 == 0 then revive-enemies
+
+  # Hide level overlay after a while
+  v2 := 0b01111111
+  v2 &= vA
+  if v2 == 0 begin
+    i := long level-screen
+    save v2 - v2
+  end
 
   # Regain power over time
   v2 := 0b00000001
-  v2 &= v0
+  v2 &= vA
   if v2 == 0 begin
     i := long hits
     load v0 - v0
@@ -1164,19 +1170,6 @@
     save v0
     vE += 5
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
-  again
-
-# Generate a new wave of enemies
-: generate-enemies
-  # Pre-load current level for generate-enemy
-  i := long level
-  load vC - vC
-  vE := 0
-  i := long enemies
-  loop
-    generate-enemy
-    vE += 1
-    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
   again
 
 : generate-enemy
