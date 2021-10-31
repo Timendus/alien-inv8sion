@@ -2,6 +2,13 @@
 
 : main
   lores
+  render-vanity
+  v0 := 100
+  delay := v0
+  loop
+    v0 := delay
+    if v0 != 0 then
+  again
   render-title
   v0 := key
 

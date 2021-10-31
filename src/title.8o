@@ -1,9 +1,17 @@
+: render-vanity
+  i := long vanity
+  s8plane 0x7
+  v2 := 24
+  jump render-bitmap
+
 : render-title
   i := long title-screen
   s8plane 0xF
+  v2 := 32
+: render-bitmap
+  clear
   v0 := 0
   v1 := 0
-  v2 := 32
   loop
     sprite v0 v1 8
     i += v2
@@ -16,3 +24,4 @@
   again
 
 #include "sprites/title.8o"
+#include "sprites/vanity.8o"
