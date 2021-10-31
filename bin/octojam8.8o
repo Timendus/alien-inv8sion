@@ -139,21 +139,33 @@
         v0 := 3
         save v0
         # Increast score
+        i := long level
+        load v1 - v1
         i := long score
         load v0 - v0
         v0 += 1
-        save v0
-        # Next level if score overflows
-        if v0 == 0 begin
+        if v1 < 4 then v0 += 1
+        if v1 < 3 then v0 += 1
+        if v1 < 2 then v0 += 1
+        save v0 - v0
+        # Next level if score reaches 250
+        if v0 > 249 begin
+          # Reset score to 0
+          v0 := 0
+          save v0
+          # Reset tick so timing of overlay makes sense
+          i := long tick
+          save v0
+          # Increase level
           i := long level
           load v0 - v0
           v0 += 1
           save v0
+          # Show level overlay
           v0 := 1
           i := long level-screen
           save v0
-          i := long tick
-          save v0
+          # Enemies back to start
           hide-enemies
         end
         # Make a beep
@@ -748,8 +760,8 @@
         generate-enemy
         i := long score
         load v0 - v0
-        if v0 > 9 begin
-          v0 -= 10
+        if v0 > 4 begin
+          v0 -= 5
         else
           v0 := 0
         end
@@ -1170,7 +1182,10 @@
 : generate-enemy
   # v0 / Type: 0, 1 or 2 (0 most likely)
   v0 := random 3
-  if v0 == 3 then v0 := 0
+  if vC == 1 then v0 := random 31
+  if vC == 2 then v0 := random 15
+  if vC == 3 then v0 := random 7
+  if v0 > 2 then v0 := 0
   # v1 / Vx: Negative number from -1 to -3
   v2 := random 7
   v2 >>= v2
