@@ -1,22 +1,49 @@
 # Alien Inv8sion
 
-__Work in progress! 😉__
+![The title screen for Alien Inv8sion](./titlescreen.png)
 
 A fun project for [Octojam 8](https://itch.io/jam/octojam-8). Challenge: write a
 game for the illustrious Chip-8 platform in the month of October.
 
 To play:
 
-  * Open this in a new tab: [Suggested soundtrack](https://www.youtube.com/watch?v=Pz1a9MM-Vn4&ab_channel=ThePrimeThanatos) 🎶😄
-  * [Start the game in your browser!](https://timendus.github.io/alien-inv8sion/silicon8) (full colours)
-  * Or: [run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
+  * The game on Itch.io (pending)
+  * [Just the game, running in your browser!](https://timendus.github.io/alien-inv8sion/silicon8)
 
-Controls:
+Bonus content:
+
+  * [Suggested soundtrack](https://www.youtube.com/watch?v=Pz1a9MM-Vn4&ab_channel=ThePrimeThanatos) 🎶😄
+  * [Run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
+
+## How to play Alien Inv8sion
+
+### Controls
+
   * Arrow keys or WASD to control your ship (or keys 5, 7, 8 and 9 on mobile / Cosmac VIP)
   * E or spacebar to fire lasers (or key 6 on mobile / Cosmac VIP)
 
-(If you like this, you may also like my submission from last year, [3D Viper
-Maze](https://github.com/Timendus/3d-viper-maze))
+### Gameplay
+
+You are famed airship pilot Gunnar Gunman, and after the aliens striked first
+and destroyed most of the human fleet, you are planet Earth's only hope! Destroy
+as many aliens as you can before they hit the ground to give your fellow human
+being a fighting chance! 👽
+
+For each alien spaceship you shoot down, you gain points (shown on the top left,
+indicated with "PTS"). If you let alien ships escape and get down to the planet,
+you lose points. For every 250 points you collect, you go up a level (current
+level shown bottom left, indicated with "LVL"). But beware! Each level, the
+attacks get more fierce!
+
+Your ship does not have unlimited power. The power meter (white indicator on the
+left of the playfield, which turns red) shows you how much power your ship has
+left. Shooting your lasers takes power, and if you lose power your lasers will
+be less powerful. More importantly, your power also feeds your shields. If you
+run your ship into alien ships, your shield will compensate and draw power. Lose
+all your power and you lose your shields, leaving you vulnerable to the alien
+ships!
+
+Good luck Gunnar, and may lady luck smile on you!
 
 ## The concept
 
@@ -30,9 +57,9 @@ Having recently developed a WebAssembly CHIP-8, SCHIP and XO-CHIP interpreter
 called [Silicon8](https://github.com/Timendus/silicon8) that supports the full
 range of XO-CHIPs potential colour space [[1]](#notes) (a whole whopping 16
 colours!) I figured it would be a shame not to make use of those colours in my
-next game. So I did, and I bumped the virtual CPU speed an absolutely insane
+next game. So I did, and I bumped the virtual CPU speed to an absolutely insane
 12Mhz to bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted
-arcade systems, or even systems like the NES.
+arcade systems of the time, or even systems like the NES.
 
 Unfortunately I didn't have very much time to work on this game this year, and
 the actual gameplay may not be what you expect from an arcade or NES game. But
@@ -40,7 +67,11 @@ it's fun to fly around and shoot aliens, and as a demo of what CHIP-8 can do if
 pushed: a fully animated colourful parallax background with lots of masked
 sprites flying across the screen!
 
-A big thanks to **[@mirandavdende](https://github.com/mirandavdende)** for helping with playtesting the game!
+A big thanks to **[@mirandavdende](https://github.com/mirandavdende)** for
+helping with playtesting the game!
+
+If you like this, you may also like my submission from last year, [3D Viper
+Maze](https://github.com/Timendus/3d-viper-maze).
 
 ### Notes
 
@@ -154,9 +185,28 @@ Next I fixed a couple of lingering bugs, the biggest of which being the hit
 detection on the laser. It's no fun if you shoot an alien and they just don't
 die 🙈
 
-## TODO LIST
+### Day six: It's not a real game if you can't die
 
-* [ ] Make the game more dangerous
-  * Make enemies shoot you?
-* [ ] Work on the weapon system
-  * Add a big bomb that you can trigger once in a while?
+I decided that the game needed another gameplay mechanic to be more dynamic. The
+game was way too easy to beat (just continuously keep shooting and move up and
+down) and as a result a bit boring to play, until you hit the higher levels. And
+then it was just impossible to win. That's no fun.
+
+So I came up with the idea to add a power bar that depletes when you use your
+laser or get hit by an alien ship, and recharges over time. I just started
+implementing this idea and adding little details along the way, like your shield
+that's glowing bright if you have enough energy, starts to dim if you run out of
+energy and disappears when your energy is depleted. Also, I figured, if your
+shield is down and you get hit by an alien ship, that should be game over.
+
+Obviously, I then needed to add an explosion of the player's ship, followed by a
+"Game over" screen. All this stuff made the code even more spaghetti than it
+already was, but as long as it works and it's stable I'm fine with that for a
+game jam 😄
+
+Finally it was a matter of tweaking the difficulty of the game to make it fun to
+play for newcomers. Getting 20 ships in your face in level one turned out to be
+a bit too much for my playtester 🛸 😌
+
+So, with 11 hours left on the clock, it's time to submit this game to Octojam 8!
+Thanks for reading and good luck with your own projects!
