@@ -10,10 +10,19 @@
 
 : main
   lores
+  render-vanity
+  v0 := 100
+  delay := v0
+  loop
+    v0 := delay
+    if v0 != 0 then
+  again
+: restart
   render-title
   v0 := key
 
 : main-redraw
+  # Sync to clock
   v0 := 1
   delay := v0
   loop
@@ -22,8 +31,18 @@
   again
 
   clock-tick
-  check-keys
-  check-shots
+
+  # Game over check
+  i := long game-over
+  load v0
+  if v0 == 5 then jump reset
+  if v0 == 0 begin
+    # Skip these things if we're game over
+    check-keys
+    check-shots
+    check-collisions
+  end
+
   render-scene
   explode-enemies
   jump main-redraw
@@ -33,13 +52,48 @@
   load v0 - v0 # Don't auto-increment i
   v0 += 1
   save v0
-  vF := 0b00111111
-  v0 &= vF
+
+  # Game over animation
+  i := long game-over
+  load v1 - v1
   if v0 == 0 begin
+    if v1 == 4 then v1 := 5
+  end
+  v2 := 0b00011111
+  v2 &= v0
+  if v2 == 0 begin
+    if v1 == 3 then v1 := 4
+  end
+  v2 := 0b00001111
+  v2 &= v0
+  if v2 == 0 begin
+    if v1 == 2 then v1 := 3
+    if v1 == 1 then v1 := 2
+  end
+  save v1 - v1
+
+  # Hide level overlay after a while
+  v2 := 0b01111111
+  v2 &= v0
+  if v2 == 0 begin
     i := long level-screen
     save v0
   end
-  if v0 == 0 then revive-enemies
+
+  # Revive all enemies once in a while
+  v2 := 0b00111111
+  v2 &= v0
+  if v2 == 0 then revive-enemies
+
+  # Regain power over time
+  v2 := 0b00000001
+  v2 &= v0
+  if v2 == 0 begin
+    i := long hits
+    load v0 - v0
+    if v0 != 0 then v0 -= 1
+    save v0
+  end
   return
 
 : check-shots
@@ -48,11 +102,22 @@
   load v0
   if v0 == 0 then return
 
+  # Shooting costs power
+  i := long hits
+  load v0 - v0
+  if v0 == 120 begin
+    i := long shooting
+    v0 := 0
+    save v0
+    return # Can't shoot without power
+  else
+    v0 += 1
+    save v0
+  end
+
   # Check if we shot any aliens
   i := long player
-  load v1
-  vC := v0
-  vD := v1
+  load vC - vD
   vE := 0
   loop
     i := long enemies
@@ -101,110 +166,72 @@
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
 
-# Make exploding enemies go boom
-: explode-enemies
-  # Pre-load current level for generate-enemy
-  i := long level
-  load vC - vC
+: check-collisions
+  i := long player
+  load vC - vD
   vE := 0
   loop
     i := long enemies
     i += vE
-    load v0 - v0
-    if v0 == 5 begin
-      generate-enemy
+    load v0 - v3
+    # Don't collide with dead or exploded aliens
+    if v0 == 0 then jump check-collisions-next-alien
+    if v0 > 2 then jump check-collisions-next-alien
+    # Compare alien position (v2, v3) with player position (vC, vD)
+    v2 >>= v2
+    v2 >>= v2
+    v2 -= vC
+    v2 += 7
+    if v2 < 15 begin
+      v3 >>= v3
+      v3 >>= v3
+      v3 -= vD
+      v3 += 3
+      if v3 < 10 begin
+        # Hit! Set enemy to explosion
+        v0 := 3
+        save v0
+        # You get no points for this, but lose poser
+        i := long hits
+        load v0 - v0
+        if v0 > 114 begin
+          i := long game-over
+          v0 := 1
+          save v0
+          i := long tick
+          save v0
+          v0 := 0
+          i := long shooting
+          save v0
+        else
+          v0 += 10
+          save v0
+        end
+      end
     end
-    if v0 == 4 begin
-      v0 := 5
-      save v0
-    end
-    if v0 == 3 begin
-      v0 := 4
-      save v0
-    end
+    : check-collisions-next-alien
     vE += 5
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
 
-# Revive enemies that have been disabled
-: revive-enemies
-  # Don't revive enemies while on "Get ready" level screen
-  i := long level-screen
-  load v0
-  if v0 == 1 then return
-  # Pre-load current level for generate-enemy
-  i := long level
-  load vC - vC
-  vE := 0
-  loop
-    i := long enemies
-    i += vE
-    load v0 - v0
-    if v0 == 0 then generate-enemy
-    vE += 5
-    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
-  again
+: reset
+  i := long reset-values
+  load v9
+  i := long player
+  save v9
 
-: hide-enemies
-  vE := 0
-  loop
-    i := long enemies
-    i += vE
-    v0 := 0
-    save v0
-    vE += 5
-    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
-  again
-  return
-
-# Generate a new wave of enemies
-: generate-enemies
-  # Pre-load current level for generate-enemy
-  i := long level
-  load vC - vC
+  # Reset enemies
+  i := long reset-enemies
+  load v4
   vE := 0
   i := long enemies
   loop
-    generate-enemy
+    save v4
     vE += 1
-    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
+    if vE != NUM_ENEMIES then # Checked all NUM_ENEMIES enemies?
   again
 
-: generate-enemy
-  # v0 / Type: 0, 1 or 2 (0 most likely)
-  v0 := random 3
-  if v0 == 3 then v0 := 0
-  # v1 / Vx: Negative number from -1 to -3
-  v2 := random 7
-  v2 >>= v2
-  if vF == 1 begin # 50% chance of -1
-    v1 := -1
-  else
-    v1 := 3
-    v2 &= v1
-    if v2 == 3 begin
-      v1 := -3 # 12.5% chance of -3
-    else
-      v1 := -2 # 37.5% chance of -2
-    end
-  end
-  # Add the current level as a speed boost (level must be in vC)
-  v1 -= vC
-  # v2 / X coordinate: always start on the right, fixed point 6.2 bits number
-  v2 := 0xFF
-  # v3 / Y coordinate: random between 0 and 15, fixed point 6.2 bits number
-  v3 := random 0x0F
-  v3 += 5
-  v3 <<= v3
-  v3 <<= v3
-  # v4 / Vy: Number from -1 to 1 (0 most likely)
-  v4 := 1
-  vF := random 3
-  v4 -= vF
-  if v4 == -2 then v4 := 0
-  # Save all values for this enemy
-  save v4
-  return
+  jump restart
 
 
 # Show the contents of the display buffer on the screen
@@ -539,11 +566,15 @@
   render-enemies
   render-player
   render-hud
+  render-power
   render-score
   render-level
   i := long level-screen
   load v0
   if v0 == 1 then render-level-text
+  i := long game-over
+  load v0
+  if v0 == 4 then render-game-over-text
   display-copy
   return
 
@@ -627,10 +658,42 @@
   return
 
 : render-player
+  :unpack long player-sprite
+  i := long game-over
+  load v2 - v2
+  if v2 == 1 begin
+    :unpack long explosion1-sprite
+  end
+  if v2 == 2 begin
+    :unpack long explosion2-sprite
+  end
+  if v2 == 3 begin
+    :unpack long explosion3-sprite
+  end
+  if v2 == 4 begin
+    :unpack long explosion3-sprite
+  end
   i := player
   load v2 - v3 # X and Y
-  :unpack long player-sprite
   display-complex-sprite
+
+  i := long game-over
+  load v0
+  if v0 != 0 then return
+
+  # Show shield?
+  i := hits
+  load v0
+  if v0 < 115 begin
+    v3 -= 1
+    if v0 > 100 begin
+      :unpack long low-shield-sprite
+    else
+      :unpack long shield-sprite
+    end
+    display-complex-sprite
+    v3 += 1
+  end
 
   # Are we shooting?
   i := shooting
@@ -756,6 +819,27 @@
 
   return
 
+: render-power
+  i := long hits
+  load vA - vA
+  vA >>= vA
+  vA >>= vA
+  v2 := 0
+  v3 := 0
+  v4 := 1
+  loop
+    :unpack long power-bar
+    if v3 >= vA begin
+      v5 := 0
+    else
+      v5 := 2
+    end
+    display-sprite
+    v3 += 1
+    if v3 != 30 then
+  again
+  return
+
 
 
 
@@ -777,8 +861,10 @@
   1
 : score
   0
-: power
-  30
+: hits
+  0
+: game-over
+  0
 
 :monitor player 2
 :monitor shooting 1
@@ -788,7 +874,7 @@
 
 #####################
 # Non-blocking key input check
-# Updates the player data on input, checks for collisions
+# Updates the player data on key input
 # Destroys v0 - v3
 : check-keys
   i := long player
@@ -806,12 +892,12 @@
 
   v3 := OCTO_KEY_W
   if v3 key begin
-    if v1 > 0 then v1 -= 1
+    if v1 > 1 then v1 -= 1
   end
 
   v3 := OCTO_KEY_S
   if v3 key begin
-    if v1 < 23 then v1 += 1
+    if v1 < 22 then v1 += 1
   end
 
   v3 := OCTO_KEY_E
@@ -821,24 +907,17 @@
   save v0 - v2
   return
 
-# Blocking "press any key" routine
-# (does play music though)
-# Returns pressed key in v5
-: wait-key-press
-  vA := 0
-: wait-key-press-loop
-  #clock-tick
-  if vA key then return
-  vA += 1
-  if vA != 16 then jump wait-key-press-loop
-  jump wait-key-press
-
 # Input: v0 = level number
 : render-level-text
   create-empty-space
   render-level-number
   render-ready-string
   render-level-string
+  return
+
+: render-game-over-text
+  create-empty-space
+  render-game-over-string
   return
 
 : create-empty-space
@@ -906,7 +985,7 @@
   v3 := 10 # Top of line one
   loop
     if vB == 5 then return
-    i := level-string
+    i := long level-string
     i += vB
     load v4 - v4
     load-font
@@ -924,7 +1003,25 @@
   v3 := 16 # Top of line two
   loop
     if vB == 10 then return
-    i := get-ready-string
+    i := long get-ready-string
+    i += vB
+    load v4 - v4
+    load-font
+    load vA - vA
+    v4 := 5 # Height
+    v5 := 2 # Plane
+    display-sprite
+    v2 += vA
+    vB += 1
+  again
+
+: render-game-over-string
+  vB := 0
+  v2 := 2
+  v3 := 13 # Top of line two
+  loop
+    if vB == 15 then return
+    i := long game-over-string
     i += vB
     load v4 - v4
     load-font
@@ -957,12 +1054,20 @@
 
 
 
+: render-vanity
+  i := long vanity
+  s8plane 0x7
+  v2 := 24
+  jump render-bitmap
+
 : render-title
   i := long title-screen
   s8plane 0xF
+  v2 := 32
+: render-bitmap
+  clear
   v0 := 0
   v1 := 0
-  v2 := 32
   loop
     sprite v0 v1 8
     i += v2
@@ -975,6 +1080,128 @@
   again
 
 
+
+
+
+: reset-values
+  10 10 # Player X, Y
+  0 # Shooting boolean
+  1 # Level screen boolean
+  0 # tick
+  0 # wave
+  1 # level
+  0 # score
+  0 # hits
+  0 # Game-over state
+: reset-enemies
+  0 0 0 0 0
+
+# Make exploding enemies go boom
+: explode-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 5 begin
+      generate-enemy
+    end
+    if v0 == 4 begin
+      v0 := 5
+      save v0
+    end
+    if v0 == 3 begin
+      v0 := 4
+      save v0
+    end
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+# Revive enemies that have been disabled
+: revive-enemies
+  # Don't revive enemies while on "Get ready" or "Game over" screen
+  i := long level-screen
+  load v0
+  if v0 == 1 then return
+  i := long game-over
+  load v0
+  if v0 == 3 then return
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v0
+    if v0 == 0 then generate-enemy
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+: hide-enemies
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    v0 := 0
+    save v0
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+# Generate a new wave of enemies
+: generate-enemies
+  # Pre-load current level for generate-enemy
+  i := long level
+  load vC - vC
+  vE := 0
+  i := long enemies
+  loop
+    generate-enemy
+    vE += 1
+    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
+  again
+
+: generate-enemy
+  # v0 / Type: 0, 1 or 2 (0 most likely)
+  v0 := random 3
+  if v0 == 3 then v0 := 0
+  # v1 / Vx: Negative number from -1 to -3
+  v2 := random 7
+  v2 >>= v2
+  if vF == 1 begin # 50% chance of -1
+    v1 := -1
+  else
+    v1 := 3
+    v2 &= v1
+    if v2 == 3 begin
+      v1 := -3 # 12.5% chance of -3
+    else
+      v1 := -2 # 37.5% chance of -2
+    end
+  end
+  # Add the current level as a speed boost (level must be in vC)
+  v1 -= vC
+  # v2 / X coordinate: always start on the right, fixed point 6.2 bits number
+  v2 := 0xFF
+  # v3 / Y coordinate: random between 0 and 15, fixed point 6.2 bits number
+  v3 := random 0x0F
+  v3 += 5
+  v3 <<= v3
+  v3 <<= v3
+  # v4 / Vy: Number from -1 to 1 (0 most likely)
+  v4 := 1
+  vF := random 3
+  v4 -= vF
+  if v4 == -2 then v4 := 0
+  # Save all values for this enemy
+  save v4
+  return
 
 
 : enemies # 30 of 'em
@@ -1352,6 +1579,41 @@
 : laser-sprite-m
   0b00111000
 
+: shield-sprite
+  4 # Number of layers
+  9 # Height
+  7 # Mask
+  :pointer shield-sprite-m
+  0 # Plane 0
+  :pointer shield-sprite-m
+  1 # Plane 1
+  :pointer shield-sprite-m
+  2 # Plane 2
+  :pointer shield-sprite-m
+
+: low-shield-sprite
+  4 # Number of layers
+  9 # Height
+  6 # Mask
+  :pointer shield-sprite-m
+  7 # Mask
+  :pointer shield-sprite-m
+  4 # Plane 0
+  :pointer shield-sprite-m
+  1 # Plane 1
+  :pointer shield-sprite-m
+
+: shield-sprite-m
+  0b11100000
+  0b00011000
+  0b00000110
+  0b00000001
+  0b00000000
+  0b00000001
+  0b00000110
+  0b00011000
+  0b11100000
+
 : enemy1-sprite
   6 # Number of layers
   4 # Height
@@ -1569,38 +1831,41 @@
   0b00000000
 
 : hud-top-sprite
-  0b01100001
-  0b01100001
-  0b01000001
-  0b01000001
-  0b00000001
-  0b01000001
-  0b01100001
-  0b01000001
-  0b00100001
-  0b00000001
-  0b01100001
-  0b01000001
-  0b00100001
-  0b01100001
-  0b00000001
+  0b01100000
+  0b01100000
+  0b01000000
+  0b01000000
+  0b00000000
+  0b01000000
+  0b01100000
+  0b01000000
+  0b00100000
+  0b00000000
+  0b01100000
+  0b01000000
+  0b00100000
+  0b01100000
+  0b00000000
 
 : hud-bottom-sprite
+  0b00000000
+  0b01000000
+  0b01000000
+  0b01000000
+  0b01100000
+  0b00000000
+  0b00000000
+  0b10100000
+  0b10100000
+  0b01000000
+  0b00000000
+  0b01000000
+  0b01000000
+  0b01000000
+  0b01100000
+
+: power-bar
   0b00000001
-  0b01000001
-  0b01000001
-  0b01000001
-  0b01100001
-  0b00000001
-  0b00000001
-  0b10100001
-  0b10100001
-  0b01000001
-  0b00000001
-  0b01000001
-  0b01000001
-  0b01000001
-  0b01100001
 
 :stringmode ascii "\0 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" {
   :byte { VALUE }
@@ -1611,6 +1876,9 @@
 
 : get-ready-string
   ascii "GET READY!"
+
+: game-over-string
+  ascii "-= GAME OVER =-"
 
 #####################
 # Text font data
@@ -2494,3 +2762,165 @@
 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
 0xe1 0xc3 0x87 0x0f 0x9f 0x3f 0xff 0xff
 0x1a 0x3c 0x68 0xf0 0x20 0xc0 0x00 0x00
+
+: vanity
+
+# Sprite 1 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 2 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xf8 0xfe 0xfe 0xfe
+0xff 0xff 0xff 0xff 0xf8 0xfe 0xfe 0xfe
+0xff 0xff 0xff 0xff 0xf8 0xfe 0xfe 0xfe
+
+# Sprite 3 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0x2f 0xff 0xc9 0xea
+0xff 0xff 0xff 0xff 0x2f 0xff 0xc9 0xea
+0xff 0xff 0xff 0xff 0x2f 0x7f 0xc9 0xea
+
+# Sprite 4 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0x73 0xad
+0xff 0xff 0xff 0xff 0xff 0xff 0x73 0xad
+0xff 0xff 0xff 0xff 0xff 0xff 0x73 0xad
+
+# Sprite 5 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0x1c 0x6b
+0xff 0xff 0xff 0xff 0xff 0xff 0x1c 0x6b
+0xff 0xff 0xff 0xff 0xff 0xff 0x1c 0x2b
+
+# Sprite 6 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0x7f 0x7f 0x5b 0x5a
+0xff 0xff 0xff 0xff 0x7f 0x7f 0x5b 0x5a
+0xff 0xff 0xff 0xff 0x7f 0x7f 0x5b 0x5a
+
+# Sprite 7 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0x3f 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0x3f 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0x3f 0xff
+
+# Sprite 8 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 9 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 10 (3 layers, 8 bytes per layer)
+0xfe 0xfe 0xfe 0xff 0xff 0xff 0xff 0xf3
+0xfe 0xfe 0xfe 0xff 0xff 0xff 0xff 0xf3
+0xfe 0xfe 0xfe 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 11 (3 layers, 8 bytes per layer)
+0xea 0xeb 0xeb 0xff 0xff 0xff 0xff 0x77
+0xea 0xeb 0xeb 0xff 0xff 0xff 0xff 0x77
+0xea 0xeb 0xeb 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 12 (3 layers, 8 bytes per layer)
+0xa1 0xaf 0xb3 0xff 0xff 0xff 0xff 0xef
+0xa1 0xaf 0xb3 0xff 0xff 0xff 0xff 0xef
+0xa1 0xaf 0xb1 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 13 (3 layers, 8 bytes per layer)
+0x6b 0x6b 0x6c 0xff 0xff 0xff 0xff 0xff
+0x6b 0x6b 0x6c 0xff 0xff 0xff 0xff 0xff
+0x6b 0x6b 0x6c 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 14 (3 layers, 8 bytes per layer)
+0x5b 0x5b 0x62 0xff 0xff 0xff 0xff 0x76
+0x5b 0x5b 0x62 0xff 0xff 0xff 0xff 0x76
+0x5b 0x5b 0x62 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 15 (3 layers, 8 bytes per layer)
+0x7f 0xbf 0x7f 0xff 0xff 0xff 0xff 0xef
+0x7f 0xbf 0x7f 0xff 0xff 0xff 0xff 0xef
+0x7f 0xbf 0x7f 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 16 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 17 (3 layers, 8 bytes per layer)
+0x00 0x00 0xff 0xff 0xff 0xff 0xff 0xff
+0x00 0x00 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 18 (3 layers, 8 bytes per layer)
+0x6d 0x6d 0xf3 0xff 0xff 0xff 0xfc 0xfd
+0x6d 0x6d 0xf3 0xff 0xff 0xff 0xfc 0xfd
+0xff 0xff 0xff 0xff 0xff 0xff 0xfc 0xfc
+
+# Sprite 19 (3 layers, 8 bytes per layer)
+0x53 0x36 0x5b 0xff 0xff 0xff 0x3f 0xdf
+0x53 0x36 0x5b 0xff 0xff 0xff 0x3f 0xdf
+0xff 0xff 0xff 0xff 0xff 0xff 0x3f 0xdf
+
+# Sprite 20 (3 layers, 8 bytes per layer)
+0x67 0xaa 0x67 0xff 0xff 0xff 0xff 0xff
+0x67 0xaa 0x67 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 21 (3 layers, 8 bytes per layer)
+0x27 0x6f 0x2f 0xff 0xff 0xff 0xff 0xff
+0x27 0x6f 0x2f 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 22 (3 layers, 8 bytes per layer)
+0xab 0x6a 0x36 0xff 0xff 0xff 0xef 0xef
+0xab 0x6a 0x36 0xff 0xff 0xff 0xef 0xef
+0xff 0xff 0xff 0xff 0xff 0xff 0xef 0xef
+
+# Sprite 23 (3 layers, 8 bytes per layer)
+0x4e 0xee 0x47 0xff 0xff 0xff 0xff 0xff
+0x4e 0xee 0x47 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 24 (3 layers, 8 bytes per layer)
+0x00 0x00 0xff 0xff 0xff 0xff 0xff 0xff
+0x00 0x00 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 25 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+
+# Sprite 26 (3 layers, 8 bytes per layer)
+0xfd 0xfc 0xfd 0xfd 0xfd 0xff 0xff 0xff
+0xfd 0xfc 0xfd 0xfd 0xfd 0xff 0xff 0xff
+0xfd 0xfc 0xfd 0xfd 0xfd 0xff 0xff 0xff
+
+# Sprite 27 (3 layers, 8 bytes per layer)
+0xd5 0x33 0xf7 0xf7 0xf7 0xff 0xff 0xff
+0xd5 0x33 0xf7 0xf7 0xf7 0xff 0xff 0xff
+0xd5 0x33 0xf7 0xf7 0xf7 0xff 0xff 0xff
+
+# Sprite 28 (3 layers, 8 bytes per layer)
+0x9c 0x6b 0x0d 0x7e 0x99 0xff 0xff 0xff
+0x9c 0x6b 0x0d 0x7e 0x99 0xff 0xff 0xff
+0x9c 0x6b 0x0d 0x7e 0x89 0xff 0xff 0xff
+
+# Sprite 29 (3 layers, 8 bytes per layer)
+0xcc 0xb5 0x85 0xbd 0xcd 0xff 0xff 0xff
+0xcc 0xb5 0x85 0xbd 0xcd 0xff 0xff 0xff
+0xcc 0xb4 0x85 0xbd 0xc5 0xff 0xff 0xff
+
+# Sprite 30 (3 layers, 8 bytes per layer)
+0x66 0xad 0xae 0xaf 0xb4 0xff 0xff 0xff
+0x66 0xad 0xae 0xaf 0xb4 0xff 0xff 0xff
+0x66 0xad 0xae 0xaf 0xb4 0xff 0xff 0xff
+
+# Sprite 31 (3 layers, 8 bytes per layer)
+0x7f 0xff 0xff 0x7f 0xff 0xff 0xff 0xff
+0x7f 0xff 0xff 0x7f 0xff 0xff 0xff 0xff
+0x7f 0xff 0xff 0x7f 0xff 0xff 0xff 0xff
+
+# Sprite 32 (3 layers, 8 bytes per layer)
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff
