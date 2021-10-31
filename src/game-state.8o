@@ -2,7 +2,11 @@
 : player
   10 10 # X, Y
 : shooting
-  0
+  0 # Boolean
+: level-screen
+  1 # Boolean
+: game-over
+  0 # Boolean
 
 : tick
   0
@@ -12,8 +16,6 @@
   1
 : score
   0
-: level-screen
-  1
 : hits
   0
 

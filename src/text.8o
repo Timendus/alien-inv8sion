@@ -6,6 +6,11 @@
   render-level-string
   return
 
+: render-game-over-text
+  create-empty-space
+  render-game-over-string
+  return
+
 : create-empty-space
   i := long display-buffer-plane1
   clear-row
@@ -71,7 +76,7 @@
   v3 := 10 # Top of line one
   loop
     if vB == 5 then return
-    i := level-string
+    i := long level-string
     i += vB
     load v4 - v4
     load-font
@@ -89,7 +94,25 @@
   v3 := 16 # Top of line two
   loop
     if vB == 10 then return
-    i := get-ready-string
+    i := long get-ready-string
+    i += vB
+    load v4 - v4
+    load-font
+    load vA - vA
+    v4 := 5 # Height
+    v5 := 2 # Plane
+    display-sprite
+    v2 += vA
+    vB += 1
+  again
+
+: render-game-over-string
+  vB := 0
+  v2 := 2
+  v3 := 13 # Top of line two
+  loop
+    if vB == 15 then return
+    i := long game-over-string
     i += vB
     load v4 - v4
     load-font
@@ -131,5 +154,8 @@
 
 : get-ready-string
   ascii "GET READY!"
+
+: game-over-string
+  ascii "-= GAME OVER =-"
 
 #include "sprites/font.8o"

@@ -9,6 +9,7 @@
     v0 := delay
     if v0 != 0 then
   again
+: restart
   render-title
   v0 := key
 
@@ -19,10 +20,14 @@
     v0 := delay
     if v0 != 0 then
   again
+  i := long game-over
+  load v0
+  if v0 == 2 then jump reset
 
   clock-tick
   check-keys
   check-shots
+  check-collisions
   render-scene
   explode-enemies
   jump main-redraw
@@ -38,6 +43,10 @@
   v0 &= vF
   if v0 == 0 begin
     i := long level-screen
+    save v0
+    i := long game-over
+    load v0 - v0
+    if v0 == 1 then v0 := 2
     save v0
   end
 
@@ -126,6 +135,71 @@
     vE += 5
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
+
+: check-collisions
+  i := long player
+  load vC - vD
+  vE := 0
+  loop
+    i := long enemies
+    i += vE
+    load v0 - v3
+    # Don't collide with dead or exploded aliens
+    if v0 == 0 then jump check-collisions-next-alien
+    if v0 > 2 then jump check-collisions-next-alien
+    # Compare alien position (v2, v3) with player position (vC, vD)
+    v2 >>= v2
+    v2 >>= v2
+    v2 -= vC
+    v2 += 7
+    if v2 < 15 begin
+      v3 >>= v3
+      v3 >>= v3
+      v3 -= vD
+      v3 += 3
+      if v3 < 10 begin
+        # Hit! Set enemy to explosion
+        v0 := 3
+        save v0
+        # You get no points for this, but lose poser
+        i := long hits
+        load v0 - v0
+        if v0 > 114 begin
+          i := long game-over
+          v0 := 1
+          save v0
+          i := long tick
+          save v0
+        else
+          v0 += 10
+          save v0
+        end
+      end
+    end
+    : check-collisions-next-alien
+    vE += 5
+    if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
+  again
+
+: reset
+  i := long reset-values
+  load v9
+  i := long player
+  save v9
+  jump restart
+
+#data
+
+: reset-values
+  10 10 # Player X, Y
+  0 # Shooting boolean
+  1 # Level screen boolean
+  0 # Game-over boolean
+  0 # tick
+  0 # wave
+  1 # level
+  0 # score
+  0 # hits
 
 #include "enemies.8o"
 #include "renderer1.8o"
