@@ -1,4 +1,4 @@
-# Alien inv8sion
+# Alien Inv8sion
 
 __Work in progress! 😉__
 
@@ -30,15 +30,17 @@ Having recently developed a WebAssembly CHIP-8, SCHIP and XO-CHIP interpreter
 called [Silicon8](https://github.com/Timendus/silicon8) that supports the full
 range of XO-CHIPs potential colour space [[1]](#notes) (a whole whopping 16
 colours!) I figured it would be a shame not to make use of those colours in my
-next game. So I did, and I bumped the virtual CPU speed to something absolutely
-insane to bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted
-arcade systems, or even systems like the NES from 1985.
+next game. So I did, and I bumped the virtual CPU speed an absolutely insane
+12Mhz to bring CHIP-8 (or more specifically XO-CHIP) much closer to the coveted
+arcade systems, or even systems like the NES.
 
 Unfortunately I didn't have very much time to work on this game this year, and
-the actual gameplay isn't what you may expect from an arcade or NES game. But
-it's fun to play around with, and as a demo of what CHIP-8 can do if pushed: a
-fully animated colourful parallax background with lots of masked sprites flying
-across the screen!
+the actual gameplay may not be what you expect from an arcade or NES game. But
+it's fun to fly around and shoot aliens, and as a demo of what CHIP-8 can do if
+pushed: a fully animated colourful parallax background with lots of masked
+sprites flying across the screen!
+
+A big thanks to **[@mirandavdende](https://github.com/mirandavdende)** for helping with playtesting the game!
 
 ### Notes
 
@@ -126,16 +128,35 @@ doing pixel art. The parallax background was really crude the first time around,
 so I gave it a do-over. Same with the explosion animation and the alien UFO
 ship. Looking a bit less bad this time 😜
 
+### Day five: Wrapping things up
+
+Only 1 day and 18 hours left on the clock!
+
+There are always a couple of things that need doing before you can release your
+project. Generally speaking that's more work than you expect it to be. In this
+case I had to build a version of Silicon8 that would just start the game at the
+right speed and nothing else. Also I needed to choose a name, rename the Github
+repository and fix Github pages to host the game. Plus lots of small things.
+
+It's a bit counter intuitive to do these things first, and then get back to the
+core game mechanic, but this way I can be much more relaxed, knowing that when
+the deadline comes I can just hit compile, `git push` and submit!
+
+Then I got back to working on the gameplay. First, I decided that the game
+needed to be a bit more communicative and not just plain drop you in the action.
+A game needs to be more than just the core game loop. It needs stages and
+progress. So I added a title screen, showing off all the pretty little colours,
+and a "Level X, GET READY!" overlay to notify you when you actually gain a
+level. These things make the whole thing feel much more like an actual game that
+you can move through.
+
+Next I fixed a couple of lingering bugs, the biggest of which being the hit
+detection on the laser. It's no fun if you shoot an alien and they just don't
+die 🙈
+
 ## TODO LIST
 
-* [ ] Make shooting aliens more accurate (bounding box)
-* [ ] Fix exploding aliens
-  * Move exploding aliens up a pixel
-  * Don't blow up blown up aliens
 * [ ] Make the game more dangerous
   * Make enemies shoot you?
-  * Make collisions with enemies hurt?
-  * Give player health?
 * [ ] Work on the weapon system
   * Add a big bomb that you can trigger once in a while?
-  * Lasers or bombs use up energy to shoot?
