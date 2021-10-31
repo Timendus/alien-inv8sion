@@ -56,19 +56,6 @@
     if vE == ENEMY_BYTES then return # Checked all NUM_ENEMIES enemies?
   again
 
-# Generate a new wave of enemies
-: generate-enemies
-  # Pre-load current level for generate-enemy
-  i := long level
-  load vC - vC
-  vE := 0
-  i := long enemies
-  loop
-    generate-enemy
-    vE += 1
-    if vE == NUM_ENEMIES then return # Generated all NUM_ENEMIES enemies?
-  again
-
 : generate-enemy
   # v0 / Type: 0, 1 or 2 (0 most likely)
   v0 := random 3
