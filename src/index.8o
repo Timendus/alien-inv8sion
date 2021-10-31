@@ -32,13 +32,29 @@
   load v0 - v0 # Don't auto-increment i
   v0 += 1
   save v0
-  vF := 0b00111111
+
+  # Hide level overlay after a while
+  vF := 0b01111111
   v0 &= vF
   if v0 == 0 begin
     i := long level-screen
     save v0
   end
+
+  # Revive all enemies once in a while
+  vF := 0b00111111
+  v0 &= vF
   if v0 == 0 then revive-enemies
+
+  # Regain power over time
+  vF := 0b00000001
+  v0 &= vF
+  if v0 == 0 begin
+    i := long hits
+    load v0 - v0
+    if v0 != 0 then v0 -= 1
+    save v0
+  end
   return
 
 : check-shots
@@ -47,11 +63,22 @@
   load v0
   if v0 == 0 then return
 
+  # Shooting costs power
+  i := long hits
+  load v0 - v0
+  if v0 == 120 begin
+    i := long shooting
+    v0 := 0
+    save v0
+    return # Can't shoot without power
+  else
+    v0 += 1
+    save v0
+  end
+
   # Check if we shot any aliens
   i := long player
-  load v1
-  vC := v0
-  vD := v1
+  load vC - vD
   vE := 0
   loop
     i := long enemies

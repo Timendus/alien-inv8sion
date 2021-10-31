@@ -7,6 +7,7 @@
   render-enemies
   render-player
   render-hud
+  render-power
   render-score
   render-level
   i := long level-screen
@@ -99,6 +100,20 @@
   load v2 - v3 # X and Y
   :unpack long player-sprite
   display-complex-sprite
+
+  # Show shield?
+  i := hits
+  load v0
+  if v0 < 115 begin
+    v3 -= 1
+    if v0 > 100 begin
+      :unpack long low-shield-sprite
+    else
+      :unpack long shield-sprite
+    end
+    display-complex-sprite
+    v3 += 1
+  end
 
   # Are we shooting?
   i := shooting
@@ -222,6 +237,27 @@
   i := long display-buffer-plane4-plus-15
   save vE
 
+  return
+
+: render-power
+  i := long hits
+  load vA - vA
+  vA >>= vA
+  vA >>= vA
+  v2 := 0
+  v3 := 0
+  v4 := 1
+  loop
+    :unpack long power-bar
+    if v3 >= vA begin
+      v5 := 0
+    else
+      v5 := 2
+    end
+    display-sprite
+    v3 += 1
+    if v3 != 30 then
+  again
   return
 
 #include "sprites/backgrounds.8o"

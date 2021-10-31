@@ -57,3 +57,38 @@
 
 : laser-sprite-m
   0b00111000
+
+: shield-sprite
+  4 # Number of layers
+  9 # Height
+  7 # Mask
+  :pointer shield-sprite-m
+  0 # Plane 0
+  :pointer shield-sprite-m
+  1 # Plane 1
+  :pointer shield-sprite-m
+  2 # Plane 2
+  :pointer shield-sprite-m
+
+: low-shield-sprite
+  4 # Number of layers
+  9 # Height
+  6 # Mask
+  :pointer shield-sprite-m
+  7 # Mask
+  :pointer shield-sprite-m
+  4 # Plane 0
+  :pointer shield-sprite-m
+  1 # Plane 1
+  :pointer shield-sprite-m
+
+: shield-sprite-m
+  0b11100000
+  0b00011000
+  0b00000110
+  0b00000001
+  0b00000000
+  0b00000001
+  0b00000110
+  0b00011000
+  0b11100000

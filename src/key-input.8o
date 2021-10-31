@@ -18,12 +18,12 @@
 
   v3 := OCTO_KEY_W
   if v3 key begin
-    if v1 > 0 then v1 -= 1
+    if v1 > 1 then v1 -= 1
   end
 
   v3 := OCTO_KEY_S
   if v3 key begin
-    if v1 < 23 then v1 += 1
+    if v1 < 22 then v1 += 1
   end
 
   v3 := OCTO_KEY_E
