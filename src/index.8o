@@ -41,15 +41,9 @@
 
 : clock-tick
   i := long tick
-  load v0 - v0 # Don't auto-increment i
-  v0 += 1
-  save v0
-
-  # This is one of those last-minute bugs that I don't feel like solving ;)
-  # If I load, increase and save vA, weird things happen. If I do the same with
-  # v0 and then move the value to vA (because that keeps it safe when we call
-  # revive-enemies) then there's no problem. Mind. Blown. 🤯
-  vA := v0
+  load vA - vA
+  vA += 1
+  save vA - vA
 
   # Game over animation
   i := long game-over
