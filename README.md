@@ -103,6 +103,10 @@ able to mask out parts of the existing image. The XOR sprite routine of CHIP-8
 is not up to such a task. And I need to be able to operate on four separate
 planes to use all 16 colours.
 
+https://user-images.githubusercontent.com/2649939/139667898-555d67ce-d519-4963-98e6-2e06f9a36bdf.mp4
+
+_First tests with the buffered rendering code_
+
 But it quickly became obvious that I basically had no time available for a
 project of this size. Last year I had quite a bit of time on my hands because
 everything fun in the world was cancelled due to the Corona virus. But this year
@@ -126,6 +130,10 @@ render sprites partly off screen on the left side was an issue I didn't feel
 like solving, so I hid the crime behind a status bar 😉 The spidery player sprite
 changed into a spaceship that could shoot lasers, and we were off to the races.
 
+https://user-images.githubusercontent.com/2649939/139667984-42d81ad4-fc3d-4f16-9dba-7c2981cc97fe.mp4
+
+_The above test with added colours, masking and an animated background_
+
 ### Day three: Give me something to shoot!
 
 Shooting lasers is no fun without anything to shoot, so on day three I added the
@@ -147,6 +155,10 @@ up to 255. When it overflows you go up a level, and the ships get faster. When
 alien ships reach the left side of the screen, you lose ten points. So at some
 point it gets pretty difficult to get to the next level.
 
+https://user-images.githubusercontent.com/2649939/139668063-769bd992-09de-4f4b-b557-b5a948cecffb.mp4
+
+_Me showing off my mad alien shooting skillz_
+
 I'm not sure where to go next. It's not really fun to get stuck on some level.
 But it can be a competition with friends to see who gets the furthest, I guess.
 Also, I feel like there should be some danger involved, like the enemies
@@ -158,6 +170,10 @@ Still not entirely sure how I was going to fix the gameplay, I spent an evening
 doing pixel art. The parallax background was really crude the first time around,
 so I gave it a do-over. Same with the explosion animation and the alien UFO
 ship. Looking a bit less bad this time 😜
+
+https://user-images.githubusercontent.com/2649939/139668118-aa720364-95d8-45a6-ab8a-956e24bd93bd.mp4
+
+_I'm quite pleased with how the background turned out_
 
 ### Day five: Wrapping things up
 
