@@ -10,6 +10,8 @@ To play:
   * [The game on Itch.io](https://timendus.itch.io/alien-inv8sion)
   * [Just the game, running in your browser!](https://timendus.github.io/alien-inv8sion/silicon8)
 
+![The gameplay of Alien Inv8sion](https://user-images.githubusercontent.com/2649939/139736414-cb5d56f0-1c69-4da0-b528-4fac786d9a3f.gif)
+
 Bonus content:
 
   * [Suggested soundtrack](https://www.youtube.com/watch?v=Pz1a9MM-Vn4&ab_channel=ThePrimeThanatos) 🎶😄
