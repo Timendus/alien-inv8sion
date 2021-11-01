@@ -1,6 +1,6 @@
 # Alien Inv8sion
 
-![The title screen for Alien Inv8sion](./titlescreen.png)
+![The title screen for Alien Inv8sion](./images/titlescreen.png)
 
 A fun project for [Octojam 8](https://itch.io/jam/octojam-8). Challenge: write a
 game for the illustrious Chip-8 platform in the month of October.
@@ -10,7 +10,7 @@ To play:
   * [The game on Itch.io](https://timendus.itch.io/alien-inv8sion)
   * [Just the game, running in your browser!](https://timendus.github.io/alien-inv8sion/silicon8)
 
-![The gameplay of Alien Inv8sion](https://user-images.githubusercontent.com/2649939/139736414-cb5d56f0-1c69-4da0-b528-4fac786d9a3f.gif)
+![The gameplay of Alien Inv8sion](./videos/alien-inv8sion.gif)
 
 Bonus content:
 
