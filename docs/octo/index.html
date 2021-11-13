@@ -897,7 +897,7 @@ function playPattern(soundLength,buffer,pitch=PITCH_BIAS,
 
 	var freq = FREQ*2**((pitch-PITCH_BIAS)/48);
 	var samples = Math.ceil(audio.sampleRate * soundLength);
-	
+
 	var bufflen = buffer.length * 8;
 	var audioBuffer = new Float32Array(samples);
 
@@ -907,7 +907,7 @@ function playPattern(soundLength,buffer,pitch=PITCH_BIAS,
 	// keep super-sampling consistent with audio sample rate
 	var quality = Math.ceil( 384000 / audio.sampleRate );
 	var lowPassAlpha = getLowPassAlpha(audio.sampleRate * quality);
-	
+
 	for(var i = 0, il = samples; i < il; i++) {
 		for (var j = 0; j < quality; ++j) {
 			var cell = pos >> 3, shift = pos & 7 ^ 7;
@@ -918,7 +918,7 @@ function playPattern(soundLength,buffer,pitch=PITCH_BIAS,
 	}
 
 	audioData.push(new AudioBuffer(audioBuffer, samples));
-	
+
 	return { pos };
 }
 
@@ -1479,4 +1479,13 @@ intervalHandle=setInterval(_=>{
 	document.body.style.backgroundColor = emulator.st?emulator.buzzColor:emulator.quietColor
 }, frameTime)
 injectAdaptiveControls(emulator.touchInputMode,document.getElementById('target'),ku,kd)
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PPX4DKXXFD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PPX4DKXXFD');
 </script>
