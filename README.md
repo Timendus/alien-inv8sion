@@ -14,6 +14,7 @@ To play:
 
 Bonus content:
 
+  * Alien Inv8sion featured on the [OctoJam 8 Showcase](https://www.youtube.com/watch?v=52AdEMjciDY&t=2460s&ab_channel=AwfulJams) (YouTube)
   * [Suggested soundtrack](https://www.youtube.com/watch?v=Pz1a9MM-Vn4&ab_channel=ThePrimeThanatos) 🎶😄
   * [Run the game in the Octo interpreter](https://timendus.github.io/alien-inv8sion/octo), to prove it's still just a regular XO-CHIP game 😉 (reduced colours)
 
