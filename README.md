@@ -1,3 +1,5 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T6T0DOOWP)
+
 # Alien Inv8sion
 
 ![The title screen for Alien Inv8sion](./images/titlescreen.png)
