@@ -1,4 +1,4 @@
-#data
+:segment data
 
 : enemy1-sprite
   6 # Number of layers

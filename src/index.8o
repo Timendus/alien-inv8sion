@@ -1,4 +1,4 @@
-#include "macros.8o"
+:include "macros.8o"
 
 : main
   lores
@@ -237,7 +237,7 @@
 
   jump restart
 
-#data
+:segment data
 
 : reset-values
   10 10 # Player X, Y
@@ -252,9 +252,9 @@
 : reset-enemies
   0 0 0 0 0
 
-#include "enemies.8o"
-#include "renderer1.8o"
-#include "game-state.8o"
-#include "key-input.8o"
-#include "text.8o"
-#include "title.8o"
+:include "enemies.8o"
+:include "renderer1.8o"
+:include "game-state.8o"
+:include "key-input.8o"
+:include "text.8o"
+:include "title.8o"

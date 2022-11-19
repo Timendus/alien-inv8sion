@@ -143,7 +143,7 @@
   i += v4
   return
 
-#data
+:segment data
 
 :stringmode ascii "\0 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" {
   :byte { VALUE }
@@ -158,4 +158,4 @@
 : game-over-string
   ascii "-= GAME OVER =-"
 
-#include "sprites/font.8o"
+:include "sprites/font.8o"

@@ -23,5 +23,5 @@
     end
   again
 
-#include "sprites/title.8o"
-#include "sprites/vanity.8o"
+:include "sprites/title.8o"
+:include "sprites/vanity.8o"
