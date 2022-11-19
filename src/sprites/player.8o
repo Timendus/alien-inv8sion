@@ -1,4 +1,4 @@
-#data
+:segment data
 
 : player-sprite
   6 # Number of layers

@@ -95,7 +95,7 @@
   save v4
   return
 
-#data
+:segment data
 
 : enemies # 30 of 'em
   0 0 0 0 0 # Type, Vx, X, Y, Vy

@@ -1,5 +1,5 @@
-#include "display.8o"
-#include "scores.8o"
+:include "display.8o"
+:include "scores.8o"
 
 : render-scene
   display-clear
@@ -281,7 +281,7 @@
   again
   return
 
-#include "sprites/backgrounds.8o"
-#include "sprites/player.8o"
-#include "sprites/enemies.8o"
-#include "sprites/hud.8o"
+:include "sprites/backgrounds.8o"
+:include "sprites/player.8o"
+:include "sprites/enemies.8o"
+:include "sprites/hud.8o"

@@ -46,9 +46,9 @@
   v5 := 0 # plane
   jump display-sprite
 
-#data
+:segment data
 
 : numbers-bcd
   0 0 0
 
-#include "sprites/numbers.8o"
+:include "sprites/numbers.8o"

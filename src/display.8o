@@ -45,11 +45,11 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-  #if OCTO
+  :if OCTO
     s8plane 1
-  #else
+  :else
     s8plane 4
-  #end
+  :end
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
@@ -67,11 +67,11 @@
   sprite v8 v1 15   i += v9
   sprite v8 v3 15   i += v9
 
-  #if OCTO
+  :if OCTO
     s8plane 1
-  #else
+  :else
     s8plane 8
-  #end
+  :end
   sprite v0 v1 15   i += v9
   sprite v0 v3 15   i += v9
   sprite v2 v1 15   i += v9
@@ -280,7 +280,7 @@
     row += 1
   again
 
-#data
+:segment data
 
 : display-buffer
 : display-buffer-plane1

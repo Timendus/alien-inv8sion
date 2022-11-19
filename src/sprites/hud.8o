@@ -1,4 +1,4 @@
-#data
+:segment data
 
 : hud-top-sprite
   0b01100000
